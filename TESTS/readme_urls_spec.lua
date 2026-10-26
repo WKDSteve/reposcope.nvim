@@ -16,7 +16,7 @@ return function(H)
 
   -- GitHub --------------------------------------------------------------------
   do
-    local urls = github.get_urls("StefanBartl", "reposcope.nvim", "main")
+    local urls = github.get_urls("WKDSteve", "reposcope.nvim", "main")
     H.eq(
       urls.raw,
       "https://raw.githubusercontent.com/WKDSteve/reposcope.nvim/main/README.md",
@@ -31,7 +31,7 @@ return function(H)
 
     -- The branch is not decoration: a repository still on `master` has to be
     -- asked about `master`, or the answer is a 404 for both URLs.
-    local master = github.get_urls("StefanBartl", "Notes", "master")
+    local master = github.get_urls("WKDSteve", "Notes", "master")
     H.contains(master.raw, "/Notes/master/README.md", "the raw URL carries the branch")
     H.contains(master.api, "ref=master", "and so does the API URL")
 
