@@ -8,7 +8,7 @@
 --- costs a file read.
 ---
 --- This registers a **source** with
---- [hover.nvim](https://github.com/StefanBartl/hover.nvim): it says what the
+--- [hover.nvim](https://github.com/WKDSteve/hover.nvim): it says what the
 --- cursor is on, and hands back the *path* of the cached README rather than
 --- the slug. hover.nvim then classifies a `.md` file and runs its own markdown
 --- preview -- the same one it uses for any other markdown target.

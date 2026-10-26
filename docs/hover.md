@@ -2,11 +2,11 @@
 
 Rest the cursor on `owner/repo` anywhere — a plugin spec, a lockfile, a
 dependency list, a note — and
-[hover.nvim](https://github.com/StefanBartl/hover.nvim) previews that
+[hover.nvim](https://github.com/WKDSteve/hover.nvim) previews that
 repository's README.
 
 ```
-{ "StefanBartl/hover.nvim", lazy = false }
+{ "WKDSteve/hover.nvim", lazy = false }
         └──── hover here ────┘
 
 ┌ hover.nvim.md ────────────────────────┐

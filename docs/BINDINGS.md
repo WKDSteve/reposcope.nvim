@@ -53,7 +53,7 @@ setting it to `false`/`""` in `setup({ prompt_keymaps = {...} })`.
 | `backspace`            | `<BS>`                         | n, i   | Backspace (disabled at column 0, line 2 of prompt)       |
 | `preview_scroll_up`    | `<C-u>`                        | n, i   | Scroll the README preview up, without leaving the prompt |
 | `preview_scroll_down`  | `<C-d>`                        | n, i   | Scroll the README preview down, without leaving the prompt |
-| `preview_image`        | `<C-p>`                        | n, i   | Draw the README's screenshot over the preview — needs [images.nvim](https://github.com/StefanBartl/images.nvim) with `display.remote.enabled = true` |
+| `preview_image`        | `<C-p>`                        | n, i   | Draw the README's screenshot over the preview — needs [images.nvim](https://github.com/WKDSteve/images.nvim) with `display.remote.enabled = true` |
 | `help`                 | `?`                            | n      | Show the `?` keymap cheatsheet (normal mode only, so `?` still types in insert mode) |
 | `toggle_favorite`      | `<C-f>`                        | n, i   | Toggle favorite for the currently selected repository (see `:Reposcope favorites`) |
 
@@ -95,7 +95,7 @@ whenever it opens/closes.
 The multi-repo git dashboard's own component-local keys (`m`/`M`/`p`/`P`/`f`/
 `gp`/`gP`/`gf`/`gu`/`S`/`L`/`s`/`r`/`R`/`y`/`?`) moved along with the feature
 itself to gitsuite.nvim's `:Git dashboard` — see that plugin's
-[BINDINGS.md](https://github.com/StefanBartl/gitsuite.nvim/blob/main/docs/BINDINGS.md).
+[BINDINGS.md](https://github.com/WKDSteve/gitsuite.nvim/blob/main/docs/BINDINGS.md).
 
 ---
 

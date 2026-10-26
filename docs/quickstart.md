@@ -15,7 +15,7 @@ favorites a repository, `?` lists every key, `<Esc>` closes.
 
 Then, later, for the clones you already have — a git-status dashboard
 across the whole folder, push/pull/fetch per row or per marked set — see
-[gitsuite.nvim](https://github.com/StefanBartl/gitsuite.nvim)'s `:Git
+[gitsuite.nvim](https://github.com/WKDSteve/gitsuite.nvim)'s `:Git
 dashboard`.
 
 Verify your setup any time with:

@@ -78,7 +78,7 @@ prompt, so browsing a long README needs no window switch.
 
 Draws the screenshot or demo GIF a repository's README references over the
 preview pane, instead of leaving the reader with link text. A soft dependency:
-without [images.nvim](https://github.com/StefanBartl/images.nvim) everything
+without [images.nvim](https://github.com/WKDSteve/images.nvim) everything
 else works unchanged, and the key says what is missing.
 
 **It is a keypress rather than part of the preview, and that came out of a

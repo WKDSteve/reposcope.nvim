@@ -1,7 +1,7 @@
 ---@module 'reposcope.ui.preview.preview_image'
 ---@brief Draws the image a repository's README references into the preview window, on request.
 ---@description
---- A soft integration with [images.nvim](https://github.com/StefanBartl/images.nvim):
+--- A soft integration with [images.nvim](https://github.com/WKDSteve/images.nvim):
 --- when a repository's README carries a real screenshot or demo GIF, this shows
 --- it over the preview pane instead of leaving the reader with the link text.
 --- It is a keypress rather than part of the preview because a download only

@@ -350,7 +350,7 @@ Cloning requires a valid `clone.std_dir` and tool configuration.
 
 Already cloned repositories can be maintained (a multi-repo git-status
 dashboard, bulk fetch/pull) with gitsuite.nvim's `:Git dashboard` — see
-https://github.com/StefanBartl/gitsuite.nvim.
+https://github.com/WKDSteve/gitsuite.nvim.
 
 ==============================================================================
 TROUBLESHOOTING                                    *reposcope-troubleshooting*
@@ -400,12 +400,12 @@ for correction.
 ==============================================================================
 SEE ALSO                                                       *reposcope-links*
 
-- GitHub:      https://github.com/StefanBartl/reposcope.nvim
+- GitHub:      https://github.com/WKDSteve/reposcope.nvim
 - Doc index:   `docs/README.md` in the repository
-- lib.nvim:    https://github.com/StefanBartl/lib.nvim (required)
-- hover.nvim:  https://github.com/StefanBartl/hover.nvim (optional, see
+- lib.nvim:    https://github.com/WKDSteve/lib.nvim (required)
+- hover.nvim:  https://github.com/WKDSteve/hover.nvim (optional, see
                `docs/hover.md`)
-- images.nvim: https://github.com/StefanBartl/images.nvim (optional, the
+- images.nvim: https://github.com/WKDSteve/images.nvim (optional, the
                `<C-p>` README image preview)
 
 ==============================================================================

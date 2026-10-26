@@ -26,8 +26,8 @@ return function(H)
     return owner .. "/" .. repo
   end
 
-  H.eq(slug("see StefanBartl/hover.nvim here", 12), "StefanBartl/hover.nvim", "a plain slug")
-  H.eq(slug("(StefanBartl/hover.nvim)", 5), "StefanBartl/hover.nvim", "parenthesised")
+  H.eq(slug("see WKDSteve/hover.nvim here", 12), "WKDSteve/hover.nvim", "a plain slug")
+  H.eq(slug("(WKDSteve/hover.nvim)", 5), "WKDSteve/hover.nvim", "parenthesised")
   H.eq(slug('"owner/repo"', 3), "owner/repo", "quoted")
   H.eq(slug("dep: my-org/my.repo_1", 8), "my-org/my.repo_1", "dots, dashes and underscores")
 

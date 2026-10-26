@@ -19,12 +19,12 @@ return function(H)
     local urls = github.get_urls("StefanBartl", "reposcope.nvim", "main")
     H.eq(
       urls.raw,
-      "https://raw.githubusercontent.com/StefanBartl/reposcope.nvim/main/README.md",
+      "https://raw.githubusercontent.com/WKDSteve/reposcope.nvim/main/README.md",
       "the raw host is addressed by branch"
     )
     H.eq(
       urls.api,
-      "https://api.github.com/repos/StefanBartl/reposcope.nvim/readme?ref=main",
+      "https://api.github.com/repos/WKDSteve/reposcope.nvim/readme?ref=main",
       "the API asks for the repository's README, whatever it is named"
     )
     H.excludes(urls.api, "contents/README.md", "not the single-spelling contents endpoint")

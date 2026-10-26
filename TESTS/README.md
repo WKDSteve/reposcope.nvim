@@ -11,7 +11,7 @@ bash scripts/test.sh --file config   # only spec files whose name contains "conf
 bash scripts/test.sh --json ir.json  # also write the machine-readable result
 ```
 
-The specs are run by [testing.nvim](https://github.com/StefanBartl/testing.nvim)
+The specs are run by [testing.nvim](https://github.com/WKDSteve/testing.nvim)
 (configured in `.testing.lua`, dialect `h` = the project harness in
 `TESTS/harness.lua`). Exit 0 is a pass; the runner prints one line per spec,
 exits non-zero after reporting every spec that failed, and prints

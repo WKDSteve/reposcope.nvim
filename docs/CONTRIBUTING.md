@@ -4,13 +4,13 @@ Issues, suggestions and pull requests are welcome!
 Clone, symlink into your Neovim config, and hack away.
 
 ```
-git clone https://github.com/StefanBartl/reposcope.nvim ~/.config/nvim/reposcope.nvim
+git clone https://github.com/WKDSteve/reposcope.nvim ~/.config/nvim/reposcope.nvim
 ```
 
-[`lib.nvim`](https://github.com/StefanBartl/lib.nvim) and
-[`ui.nvim`](https://github.com/StefanBartl/ui.nvim) are real runtime
+[`lib.nvim`](https://github.com/WKDSteve/lib.nvim) and
+[`ui.nvim`](https://github.com/WKDSteve/ui.nvim) are real runtime
 dependencies — several modules require them at load — and the specs are run
-by [`testing.nvim`](https://github.com/StefanBartl/testing.nvim), so check all
+by [`testing.nvim`](https://github.com/WKDSteve/testing.nvim), so check all
 three out as sibling directories before running anything.
 
 ## Before opening a pull request

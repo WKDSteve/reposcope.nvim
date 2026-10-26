@@ -61,7 +61,7 @@ typed as `ConfigOptions` in
 | `gitlab_token` | `string` | `$GITLAB_TOKEN` or `""` | GitLab personal access token, used when `provider = "gitlab"` |
 | `codeberg_token` | `string` | `$CODEBERG_TOKEN` or `""` | Codeberg personal access token, used when `provider = "codeberg"` |
 | `results_limit` | `number` | `25` | Maximum number of search results requested per query |
-| `hover` | `boolean` | `true` | Register a [hover.nvim](https://github.com/StefanBartl/hover.nvim) source so `owner/repo` under the cursor previews that repository's cached README. An explicit `:Hover show` on an uncached `owner/repo` also fetches and caches its README (GitHub only); nothing is fetched automatically. A no-op without hover.nvim; see [hover.md](hover.md) |
+| `hover` | `boolean` | `true` | Register a [hover.nvim](https://github.com/WKDSteve/hover.nvim) source so `owner/repo` under the cursor previews that repository's cached README. An explicit `:Hover show` on an uncached `owner/repo` also fetches and caches its README (GitHub only); nothing is fetched automatically. A no-op without hover.nvim; see [hover.md](hover.md) |
 | `layout` | `string` | `"default"` | UI layout style (currently only `"default"`) |
 | `keymaps.open` | `string\|false` | `"<leader>rs"` | Keymap to open the Reposcope UI (`false`/`""` disables it) |
 | `keymaps.close` | `string\|false` | `"<leader>rc"` | Keymap to close the UI cleanly (`false`/`""` disables it) |
@@ -117,7 +117,7 @@ require("reposcope").setup({
 
 `<C-p>` in the prompt draws the screenshot or demo GIF a repository's README
 references over the preview pane. It is a **soft dependency** on
-[images.nvim](https://github.com/StefanBartl/images.nvim): without it every
+[images.nvim](https://github.com/WKDSteve/images.nvim): without it every
 other part of Reposcope works unchanged, and the key says what is missing.
 
 ```lua

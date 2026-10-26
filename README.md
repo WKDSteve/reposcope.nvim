@@ -17,36 +17,36 @@
 [![Neovim](https://img.shields.io/badge/Neovim-0.10%2B-57A143?logo=neovim&logoColor=white)](https://neovim.io)
 [![Lua](https://img.shields.io/badge/Lua-5.1%2FLuaJIT-2C2D72?logo=lua&logoColor=white)](https://www.lua.org)
 ![Status](https://img.shields.io/badge/status-beta-orange)
-[![CI](https://github.com/StefanBartl/reposcope.nvim/actions/workflows/ci.yml/badge.svg)](https://github.com/StefanBartl/reposcope.nvim/actions/workflows/ci.yml)
-[![wkd](https://img.shields.io/badge/wkd-family-c6ff3d)](https://stefanbartl.github.io/wkd/p/reposcope/)
+[![CI](https://github.com/WKDSteve/reposcope.nvim/actions/workflows/ci.yml/badge.svg)](https://github.com/WKDSteve/reposcope.nvim/actions/workflows/ci.yml)
+[![wkd](https://img.shields.io/badge/wkd-family-c6ff3d)](https://wkdsteve.github.io/wkd/p/reposcope/)
 
-> Part of the [wkd](https://stefanbartl.github.io/wkd/) family — see this plugin's [page](https://stefanbartl.github.io/wkd/p/reposcope/) on the site.
+> Part of the [wkd](https://wkdsteve.github.io/wkd/) family — see this plugin's [page](https://wkdsteve.github.io/wkd/p/reposcope/) on the site.
 
 Search, preview and clone repositories from GitHub, GitLab or Codeberg without
 leaving Neovim — plus filtering, sorting, favorites and session persistence
 for your searches. Maintaining what you've already cloned (a multi-repo git
-dashboard, bulk fetch/pull) is [gitsuite.nvim](https://github.com/StefanBartl/gitsuite.nvim)'s
+dashboard, bulk fetch/pull) is [gitsuite.nvim](https://github.com/WKDSteve/gitsuite.nvim)'s
 `:Git dashboard`.
 
 ---
 
 ## Around it
 
-> **[filetree.nvim](https://github.com/StefanBartl/filetree.nvim)** — once a
+> **[filetree.nvim](https://github.com/WKDSteve/filetree.nvim)** — once a
 > repository is cloned, this is how you read it: a file tree over the clone
 > without leaving Neovim.
 >
-> **[hover.nvim](https://github.com/StefanBartl/hover.nvim)** — takes the
+> **[hover.nvim](https://github.com/WKDSteve/hover.nvim)** — takes the
 > README cache out of the picker: resting the cursor on `owner/repo` anywhere
 > previews that repository, in a plugin spec or a note.
 >
-> **[images.nvim](https://github.com/StefanBartl/images.nvim)** — draws the
+> **[images.nvim](https://github.com/WKDSteve/images.nvim)** — draws the
 > screenshot or demo GIF a README references over the preview pane, instead of
 > leaving you with link text.
 >
 > All three are soft: without them everything else works unchanged.
-> [lib.nvim](https://github.com/StefanBartl/lib.nvim) and
-> [ui.nvim](https://github.com/StefanBartl/ui.nvim) are the real plugin
+> [lib.nvim](https://github.com/WKDSteve/lib.nvim) and
+> [ui.nvim](https://github.com/WKDSteve/ui.nvim) are the real plugin
 > dependencies — see [Requirements](docs/requirements.md).
 
 ---
@@ -79,7 +79,7 @@ question each page answers.
 - [Troubleshooting](docs/troubleshooting.md) — common symptoms, developer mode, where the cache and log files live, and how to force a fresh README.
 - [Architecture](docs/architecture.md) — the module layout, and the shape every provider repeats.
 - [Contributing](docs/CONTRIBUTING.md) — how to get involved.
-- [Feedback](https://github.com/StefanBartl/reposcope.nvim/issues) — bugs, feature requests and usage questions; broader discussion in [Discussions](https://github.com/StefanBartl/reposcope.nvim/discussions).
+- [Feedback](https://github.com/WKDSteve/reposcope.nvim/issues) — bugs, feature requests and usage questions; broader discussion in [Discussions](https://github.com/WKDSteve/reposcope.nvim/discussions).
 
 `:help reposcope` is the same reference inside the editor.
 

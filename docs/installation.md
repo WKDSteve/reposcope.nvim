@@ -4,9 +4,9 @@
 
 ```lua
 {
-  "StefanBartl/reposcope.nvim",
+  "WKDSteve/reposcope.nvim",
   name = "reposcope",
-  dependencies = { "StefanBartl/lib.nvim", "StefanBartl/ui.nvim" },
+  dependencies = { "WKDSteve/lib.nvim", "WKDSteve/ui.nvim" },
   event = "VeryLazy",
   config = function()
     require("reposcope.init").setup({})
@@ -18,9 +18,9 @@
 
 ```lua
 use {
-  "StefanBartl/reposcope.nvim",
+  "WKDSteve/reposcope.nvim",
   name = "reposcope",
-  dependencies = { "StefanBartl/lib.nvim", "StefanBartl/ui.nvim" },
+  dependencies = { "WKDSteve/lib.nvim", "WKDSteve/ui.nvim" },
   event = "VeryLazy",
   config = function()
     require("reposcope.init").setup({})

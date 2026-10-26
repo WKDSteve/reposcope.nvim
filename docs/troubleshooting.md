@@ -17,7 +17,7 @@ small popup in the top-right corner instead of `:messages` / a more-prompt, so
 a long failure such as a rejected `git push` never steals focus. The popup is
 colored by level and wraps long text. Every message is also kept in a history:
 `:Reposcope messages` opens it in a buffer (`q` closes) so you can yank the
-full text; `:Reposcope messages clear` forgets it. The popup and history come from [`lib.nvim.notify.popup`](https://github.com/StefanBartl/lib.nvim)
+full text; `:Reposcope messages clear` forgets it. The popup and history come from [`lib.nvim.notify.popup`](https://github.com/WKDSteve/lib.nvim)
 (toast from ui.nvim). Without `ui.nvim`/a UI, or when `ui.notify` is enabled, the
 message goes through plain `vim.notify`.
 
@@ -59,7 +59,7 @@ exists, the actual request or repository `url` in its own field. `log_max`
 caps its size.
 
 It is written compact (no line breaks), so opening it directly is not very
-readable. If you have [`data.nvim`](https://github.com/StefanBartl/data.nvim)
+readable. If you have [`data.nvim`](https://github.com/WKDSteve/data.nvim)
 installed, `:JSON pretty` on the buffer reformats it instantly, and `:JSON
 lines`/`:JSON filter` flatten it down to one `path: value` line per entry —
 handy for spotting which `query` kept missing the cache.
