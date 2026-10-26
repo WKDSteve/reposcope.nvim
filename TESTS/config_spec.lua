@@ -25,9 +25,16 @@ return function(H)
   H.eq(config.options[key], original, "the option table starts at the defaults")
 
   -- A user value wins ---------------------------------------------------------
-  local changed = (type(original) == "boolean") and not original
-    or (type(original) == "number") and (original + 1)
-    or (tostring(original) .. "-changed")
+  -- Not an `and/or` chain: `not original` is false for a `true` default, which
+  -- would fall through to the string branch.
+  local changed
+  if type(original) == "boolean" then
+    changed = not original
+  elseif type(original) == "number" then
+    changed = original + 1
+  else
+    changed = tostring(original) .. "-changed"
+  end
   config.setup({ [key] = changed })
   H.eq(config.options[key], changed, "a user value wins")
   H.eq(DEFAULTS[key], original, "and DEFAULTS itself is not mutated")
