@@ -268,7 +268,8 @@ return function(H)
   -- lib.nvim's help float (the option cheatsheet on the command line) shows one line for the next
   -- positional argument, taken from the argument's own `desc` or the text of its type. Every
   -- subcommand that completes an argument serves it through a type of its own (REPOSCOPE_<NAME>),
-  -- whose text is the subcommand's `arg_desc`. Skipped on a lib.nvim without argument texts.
+  -- whose text is the subcommand's `arg_desc`. A lib.nvim without argument texts
+  -- fails the block by name (NEW-43).
   --
   -- The capability check runs BEFORE `with_command`: inside it `print` is the recorder that fills
   -- `env.printed`, so a skip notice printed there would be swallowed and the block would end green
@@ -284,7 +285,7 @@ return function(H)
       and type(entries.arg_desc) == "function"
     )
   then
-    print("  skip :Reposcope option float tests (lib.nvim has no argument texts)")
+    H.ok(false, "option float: lib.nvim lacks composer.help.undocumented / entries.arg_desc: update lib.nvim")
   else
     with_command({}, function()
       local missing = {}
