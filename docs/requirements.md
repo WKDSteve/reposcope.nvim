@@ -4,7 +4,7 @@
 
 | | |
 | --- | --- |
-| Neovim | **0.10+** |
+| Neovim | **0.11+** |
 | [lib.nvim](https://github.com/WKDSteve/lib.nvim) | the command layer, notifications and the progress indicator |
 | [ui.nvim](https://github.com/WKDSteve/ui.nvim) | `ui.kit` backs the filter/sort prompts and the favorites/help/dashboard views — `require("reposcope")`'s own top-level `require("reposcope.bindings.usrcmds")` reaches it before `setup()` ever runs, so it is required the moment this plugin loads, not just when those views open |
 | `gh`, `curl` or `wget` | at least one of the three on `$PATH`; `request_tool` picks which |
