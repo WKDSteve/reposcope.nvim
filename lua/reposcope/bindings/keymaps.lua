@@ -218,14 +218,14 @@ local prompt_keymap_actions = {
       end
 
       local is_fav = require("reposcope.state.favorites_state").toggle(repo)
-      notify(
+      require("reposcope.ui.list.list_window").mark_favorites()
+      require("reposcope.utils.debug").info(
         ("[reposcope] %s %s/%s %s favorites"):format(
           is_fav and "Added" or "Removed",
           repo.owner.login,
           repo.name,
           is_fav and "to" or "from"
-        ),
-        2
+        )
       )
     end,
   },

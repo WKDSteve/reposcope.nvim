@@ -102,6 +102,7 @@ local specs = {
   "hover_spec.lua",
   "list_manager_spec.lua",
   "list_init_spec.lua",
+  "favorite_mark_spec.lua",
   "list_window_spec.lua",
   "ui_config_spec.lua",
   -- Last on purpose: the only spec that opens the real UI, so it is the one

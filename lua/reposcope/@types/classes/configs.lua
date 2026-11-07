@@ -27,6 +27,7 @@
 ---@field log_max number Maximum log size (lines)
 ---@field notify_messages boolean Also record popup notifications in `:messages` (without displaying them there)
 ---@field readme_precache_count number After a search, pre-cache READMEs for this many top results (0 disables)
+---@field favorite_mark string Shown in front of a favorited row of the list; "" hides it
 
 ---@class ReposcopeConfigModule
 ---@brief Structure exposed to the outside and used during `setup()`
@@ -59,3 +60,4 @@
 ---@field log_max? number
 ---@field notify_messages? boolean
 ---@field readme_precache_count? number
+---@field favorite_mark? string

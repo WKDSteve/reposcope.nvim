@@ -58,6 +58,7 @@ local defaults = {
     help = "?", -- Show the keymap cheatsheet (normal mode only, so "?" still types in insert mode)
     toggle_favorite = "<C-f>", -- Toggle favorite for the currently selected repository
   }, -- Set an action to `false` or `""` to disable it
+  favorite_mark = "\u{2605} ", -- Shown in front of a favorited row of the list (drawn, not part of the row's text); "" hides it
   prompt_prefix_symbol = " " .. "\u{f002}" .. " ", -- Symbol shown in the `prefix` field; needs a Nerd Font. Set e.g. "> " for plain terminals
 
   -- Only change the following values in your setup({}) if you fully understand the impact; incorrect values may cause incomplete data or plugin crashes.

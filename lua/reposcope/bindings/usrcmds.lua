@@ -25,6 +25,7 @@ local apply_filter = require("reposcope.ui.actions.filter_repos").apply_filter
 local fetch_readme_for_selected = require("reposcope.controllers.provider_controller").fetch_readme_for_selected
 -- Debugging
 local notify = require("reposcope.utils.debug").notify
+local info = require("reposcope.utils.debug").info
 
 ---@internal
 ---Resets any active repository filter and restores the original relevance-sorted list.
@@ -173,7 +174,7 @@ local subcommands = {
         require("reposcope.ui.actions.favorites_view").show()
       elseif action == "clear" then
         require("reposcope.state.favorites_state").clear_all()
-        notify("[reposcope] Favorites cleared.", 2)
+        info("[reposcope] Favorites cleared.")
       else
         notify("[reposcope] Usage: :Reposcope favorites list|clear", vim.log.levels.WARN)
       end
@@ -202,7 +203,7 @@ local subcommands = {
         require("lib.nvim.output.viewer").show_lines("reposcope: top queries", lines)
       elseif action == "clear" then
         query_stats.clear_all()
-        notify("[reposcope] Query stats cleared.", 2)
+        info("[reposcope] Query stats cleared.")
       else
         notify("[reposcope] Usage: :Reposcope queries list|clear", vim.log.levels.WARN)
       end

@@ -101,6 +101,7 @@ return {
     },
     { keys = "q" },
     { keys = ":Reposcope queries clear<CR>" },
+    { wait = [[_G.noted("Query stats cleared.")]], note = "said outside dev mode too" },
     { expect = [[#require("reposcope.state.query_stats").top(10) == 0]], note = "reset" },
     { lua = "_G.wins = #vim.api.nvim_list_wins()" },
     { keys = ":Reposcope queries list<CR>" },

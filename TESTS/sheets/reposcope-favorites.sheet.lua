@@ -21,6 +21,8 @@ return {
     {
       wait = [[require("reposcope.state.favorites_state").is_favorite("bob", "lantern")]],
     },
+    { wait = [[vim.deep_equal(_G.marked(), { 2 })]], note = "the row gets the star" },
+    { wait = [[_G.noted("Added bob/lantern to favorites")]], note = "and a notice, outside dev mode too" },
     {
       expect = [[(function()
         local path = vim.fs.normalize(require("reposcope.config").get_favorites_path())
@@ -52,6 +54,7 @@ return {
     { expect = [[#_G.requests == 0]], note = "no network call, the README from the favorite's own snapshot" },
     { input = "<C-f>", note = "un-favorite" },
     { wait = [[not require("reposcope.state.favorites_state").is_favorite("bob", "lantern")]] },
+    { wait = [[#_G.marked() == 0 and _G.noted("Removed bob/lantern from favorites")]], note = "the star goes" },
     { input = "<Down>" },
     { input = "<C-f>", note = "favorite it again, for clear" },
     { wait = [[require("reposcope.state.favorites_state").is_favorite("bob", "lantern")]] },
@@ -71,6 +74,7 @@ return {
     { wait = [[vim.fn.mode() == "n"]] },
     { keys = ":Reposcope favorites clear<CR>" },
     { wait = [[#require("reposcope.state.favorites_state").list() == 0]] },
+    { wait = [[_G.noted("Favorites cleared.")]], note = "said outside dev mode too" },
     { keys = ":Reposcope favorites<CR>" },
     { wait = [[_G.focused("No favorites yet.")]], note = "the list is empty" },
     { keys = "q" },
@@ -81,7 +85,6 @@ return {
     },
   },
   manual = {
-    "There is no marker on a favorited row in the list (see the task: open question)",
     "After a restart, :Reposcope start without favorites shows the empty prompt",
   },
 }

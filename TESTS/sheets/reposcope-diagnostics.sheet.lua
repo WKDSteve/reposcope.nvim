@@ -39,7 +39,7 @@ return {
 
     { keys = ":Reposcope session restore<CR>", note = "no session: a warning" },
     { wait = [[_G.noted("No saved session found.")]] },
-    { expect = [[#_G.floats() > 0]], note = "shown as a popup" },
+    { expect = [[#_G.toasts() > 0]], note = "shown as a popup" },
     {
       expect = [[_G.has(vim.fn.execute("messages"), "No saved session found.")]],
       note = "notify_messages: in :messages as well",

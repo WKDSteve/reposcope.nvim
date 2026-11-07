@@ -179,14 +179,39 @@ end
 ---@return integer|nil
 function _G.selected() return require("reposcope.ui.list.list_window").highlighted_line end
 
----The floating windows of this tab.
+---Whether float `w` is a toast of lib.nvim's notify popup: not focusable, on the toast layer of the kit's theme
+---(zindex 70, above dialogs and previews).
+---@param w integer
+---@return boolean
+local function is_toast(w)
+  local cfg = vim.api.nvim_win_get_config(w)
+  return cfg.relative ~= "" and cfg.focusable == false and (cfg.zindex or 0) >= 70
+end
+
+---The floating windows of this tab, toasts left out (a notice must not count as an open dialog).
 ---@return integer[]
 function _G.floats()
   return vim.tbl_filter(
-    function(w) return vim.api.nvim_win_get_config(w).relative ~= "" end,
+    function(w) return vim.api.nvim_win_get_config(w).relative ~= "" and not is_toast(w) end,
     vim.api.nvim_tabpage_list_wins(0)
   )
 end
+
+---The 1-based rows of the list that carry the favorite mark.
+---@return integer[]
+function _G.marked()
+  local b, rows = _G.rbuf("list"), {}
+  if not b then return rows end
+  local ns = vim.api.nvim_create_namespace("reposcope.list.favorites")
+  for _, m in ipairs(vim.api.nvim_buf_get_extmarks(b, ns, 0, -1, { details = true })) do
+    if m[4].virt_text and m[4].virt_text[1][1] == "\u{2605} " then rows[#rows + 1] = m[2] + 1 end
+  end
+  return rows
+end
+
+---The toasts on screen.
+---@return integer[]
+function _G.toasts() return vim.tbl_filter(is_toast, vim.api.nvim_tabpage_list_wins(0)) end
 
 ---The buffer of the focused window holds `part` (plain).
 ---@param part string

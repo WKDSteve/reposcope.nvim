@@ -19,6 +19,7 @@ return function(H)
   local function with_command(env, fn)
     env.calls = {}
     env.notes = {}
+    env.infos = {}
     env.printed = {}
     env.dumped = nil
 
@@ -76,6 +77,7 @@ return function(H)
       ["reposcope.utils.stats"] = { show_stats = record("show_stats") },
       ["reposcope.utils.debug"] = {
         notify = function(msg) env.notes[#env.notes + 1] = msg end,
+        info = function(msg) env.infos[#env.infos + 1] = msg end,
         toggle_dev_mode = record("toggle_dev"),
         is_dev_mode = function() return false end,
         debugf = function() end,
@@ -187,6 +189,7 @@ return function(H)
     H.ok(find(env, "favorites_view"), "`favorites` defaults to listing")
     vim.cmd("Reposcope favorites clear")
     H.ok(find(env, "favorites_clear"), "`favorites clear` clears them")
+    H.contains(table.concat(env.infos, "\n"), "Favorites cleared.", "and says so outside dev mode too")
     vim.cmd("Reposcope favorites nonsense")
     H.contains(table.concat(env.notes, "\n"), "favorites list|clear", "and an unknown action prints usage")
   end)
@@ -205,6 +208,7 @@ return function(H)
     H.contains(dumped, "(1x) telescope", "for every entry")
     vim.cmd("Reposcope queries clear")
     H.ok(find(env, "queries_clear"), "`queries clear` clears them")
+    H.contains(table.concat(env.infos, "\n"), "Query stats cleared.", "and says so outside dev mode too")
   end)
 
   with_command({}, function(env)

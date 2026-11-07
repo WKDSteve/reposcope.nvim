@@ -54,6 +54,18 @@ function M.set_dev_mode(value) M.options.dev_mode = value end
 ---@param message string The notification message
 ---@param level? number Optional vim.log.levels (default: INFO)
 ---@return nil
+---Shows a short notice whatever the dev mode: the answer to something the user
+--- did (a favorite added, a list cleared), which `M.notify` at level INFO would
+--- keep to dev mode.
+---@param message string
+---@return nil
+function M.info(message)
+  vim.schedule(function() notify(message, vim.log.levels.INFO) end)
+end
+
+---@param message string The notification message
+---@param level? number Optional vim.log.levels (default: INFO)
+---@return nil
 function M.notify(message, level)
   level = level or 2
   if M.is_dev_mode() or level >= 3 then vim.schedule(function() notify(message, level) end) end

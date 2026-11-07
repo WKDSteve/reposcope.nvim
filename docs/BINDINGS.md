@@ -55,7 +55,7 @@ setting it to `false`/`""` in `setup({ prompt_keymaps = {...} })`.
 | `preview_scroll_down`  | `<C-d>`                        | n, i   | Scroll the README preview down, without leaving the prompt |
 | `preview_image`        | `<C-p>`                        | n, i   | Draw the README's screenshot over the preview — needs [images.nvim](https://github.com/WKDSteve/images.nvim) with `display.remote.enabled = true` |
 | `help`                 | `?`                            | n      | Show the `?` keymap cheatsheet (normal mode only, so `?` still types in insert mode) |
-| `toggle_favorite`      | `<C-f>`                        | n, i   | Toggle favorite for the currently selected repository (see `:Reposcope favorites`) |
+| `toggle_favorite`      | `<C-f>`                        | n, i   | Toggle favorite for the currently selected repository: the row gets `favorite_mark` (default `★`) and a short notice (see `:Reposcope favorites`) |
 
 **A count on `nav_up`/`nav_down`** moves that many entries at once, clamped
 to the list bounds. Handled inside `navigate_list_in_prompt` itself — one

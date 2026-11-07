@@ -29,6 +29,7 @@ return function(H)
         open_window = function() return true end,
         close_window = function() end,
         highlight_selected = function() highlight_calls = highlight_calls + 1 end,
+        mark_favorites = function() end,
       },
       ["reposcope.ui.preview.preview_manager"] = {
         inject_content = function(_, lines) injected[#injected + 1] = lines end,

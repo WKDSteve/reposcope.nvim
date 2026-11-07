@@ -30,6 +30,7 @@ require("reposcope").setup({
     preview_image = "<C-p>",                -- README image over the preview; needs images.nvim (see below)
     help = "?",                             -- Keymap cheatsheet (normal mode only)
   },
+  favorite_mark = "\u{2605} ",               -- Drawn in front of a favorited row of the list; "" hides it
   prompt_prefix_symbol = " " .. "\u{f002}" .. " ", -- Symbol in the `prefix` field; needs a Nerd Font. Set e.g. "> " for plain terminals
   clone = {
     std_dir = "~/projects",                 -- Default directory to clone into
@@ -67,6 +68,7 @@ typed as `ConfigOptions` in
 | `keymaps.close` | `string\|false` | `"<leader>rc"` | Keymap to close the UI cleanly (`false`/`""` disables it) |
 | `keymap_opts` | `table` | `{ silent = true, noremap = true }` | Options passed to the two global keymaps above |
 | `prompt_keymaps` | `table` | see [BINDINGS.md](BINDINGS.md#12-prompt-buffers) | Per-action keymaps for the prompt buffers; set an action to `false`/`""` to disable it |
+| `favorite_mark` | `string` | `"★ "` | Drawn in front of the row of a favorited repository in the list (virtual text, the row itself is unchanged); `""` hides it. Highlight group `ReposcopeFavorite` (default link `Special`) |
 | `prompt_prefix_symbol` | `string` | a Nerd Font glyph | Symbol shown in the `prefix` field; e.g. `"> "` for terminals without an icon font |
 | `clone.std_dir` | `string` | `$REPOS_DIR` or `"~/temp"` | Base path for cloning a repository selected from search results (`<C-c>`) |
 | `clone.type` | `string` | `""` (→ `git`) | Tool used to perform the clone: `""`/`"git"`, `"gh"`, `"wget"`, or `"curl"` (the latter two pull a `.zip`) |

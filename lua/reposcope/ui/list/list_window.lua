@@ -32,6 +32,10 @@ local notify = require("reposcope.utils.debug").notify
 local create_named_buffer = require("reposcope.utils.protection").create_named_buffer
 
 local HIGHLIGHT_NS = vim.api.nvim_create_namespace("reposcope.list")
+-- The favorite marks, apart from the selection: `highlight_selected` clears its own namespace on every move.
+local FAVORITE_NS = vim.api.nvim_create_namespace("reposcope.list.favorites")
+---@type boolean
+local favorite_hl_defined = false
 M.highlighted_line = 1
 
 -- List of available test layouts --- LAYOUTS!
@@ -212,6 +216,36 @@ function M.highlight_selected(index)
 
   M.highlighted_line = index
   M.reveal_line(index)
+end
+
+---Draws `favorite_mark` in front of every row of a favorited repository. The
+--- mark is inline virtual text, not part of the row: the rows stay
+--- `owner/name: description`, which is what the selection is read from.
+---@return nil
+function M.mark_favorites()
+  local buf = ui_state.buffers.list
+  if not buf or not nvim_buf_is_valid(buf) then return end
+  nvim_buf_clear_namespace(buf, FAVORITE_NS, 0, -1)
+
+  local mark = require("reposcope.config").get_option("favorite_mark")
+  if type(mark) ~= "string" or mark == "" then return end
+  if not favorite_hl_defined then
+    -- Once: every nvim_set_hl call redraws the whole screen.
+    nvim_set_hl(0, "ReposcopeFavorite", { link = "Special", default = true })
+    favorite_hl_defined = true
+  end
+
+  local is_favorite = require("reposcope.state.favorites_state").is_favorite
+  local lines = nvim_buf_get_lines(buf, 0, -1, false)
+  for i = 1, #lines do
+    local owner, name = lines[i]:match("^([^/]+)/([^:]+)")
+    if owner and is_favorite(owner, name) then
+      nvim_buf_set_extmark(buf, FAVORITE_NS, i - 1, 0, {
+        virt_text = { { mark, "ReposcopeFavorite" } },
+        virt_text_pos = "inline",
+      })
+    end
+  end
 end
 
 ---Sets the highlighted line in the list UI.

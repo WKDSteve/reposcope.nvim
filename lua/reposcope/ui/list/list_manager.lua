@@ -96,6 +96,7 @@ function M.update_list(lines)
     vim.bo[buf].modifiable = false
 
     highlight_selected(ui_state.list.last_selected_line or 1)
+    require("reposcope.ui.list.list_window").mark_favorites()
 
     -- Update preview if possible   REF:  these imports maybe at filescope ?
     local selected_repo = require("reposcope.cache.repository_cache").get_selected()
