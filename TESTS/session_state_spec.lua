@@ -117,6 +117,33 @@ return function(H)
     end)
 
     -------------------------------------------------------------------------
+    -- The prompt shows what was restored: the field buffers outlive close/open
+    -- and still hold what was typed after the save
+    -------------------------------------------------------------------------
+    local ui_state = require("reposcope.state.ui.ui_state")
+    local saved_prompt_bufs = ui_state.buffers.prompt
+    local bufs = {}
+    for _, field in ipairs({ "keywords", "owner", "language" }) do
+      bufs[field] = vim.api.nvim_create_buf(false, true)
+      vim.api.nvim_buf_set_lines(bufs[field], 0, -1, false, { " ", "typed-later" })
+    end
+    ui_state.buffers.prompt = bufs
+    prompt_state.input = { keywords = "typed-later", owner = "typed-later", language = "typed-later" }
+
+    with_session({}, function(session)
+      H.ok(session.restore(), "restoring over a prompt that holds other text")
+      H.eq(vim.api.nvim_buf_get_lines(bufs.keywords, 1, 2, false)[1], "telescope", "the keywords field shows it")
+      H.eq(vim.api.nvim_buf_get_lines(bufs.owner, 1, 2, false)[1], "nvim-telescope", "and the owner field")
+      H.eq(vim.api.nvim_buf_get_lines(bufs.language, 1, 2, false)[1], "", "a field the session left empty is empty")
+      H.eq(prompt_state.get_field_text("language"), "", "in the state too, so the next <CR> searches what is shown")
+    end)
+
+    ui_state.buffers.prompt = saved_prompt_bufs
+    for _, buf in pairs(bufs) do
+      vim.api.nvim_buf_delete(buf, { force = true })
+    end
+
+    -------------------------------------------------------------------------
     -- A session with nothing to re-run still restores the prompt
     -------------------------------------------------------------------------
     with_session({ query = "", filter = "", sort = "relevance" }, function(session, env)

@@ -90,6 +90,9 @@ snippets are in
 persists exactly: the active provider, the visible prompt fields, what was
 typed into each, the last built search query, the active filter text, and
 the sort mode — as one JSON file that overwrites on every `save`.
+`restore` writes the saved text back into the prompt fields as well (a
+field the session left empty is emptied), so the prompt shows what the
+re-run searched for.
 
 What it does **not** touch:
 

@@ -57,6 +57,17 @@ function M.save()
   return true
 end
 
+---@private
+---Writes `text` into the input line of prompt field `field`, when its buffer exists.
+---@param field string
+---@param text string
+---@return nil
+local function show_in_prompt(field, text)
+  local buf = (require("reposcope.state.ui.ui_state").buffers.prompt or {})[field]
+  if type(buf) ~= "number" or not vim.api.nvim_buf_is_valid(buf) or not vim.bo[buf].modifiable then return end
+  vim.api.nvim_buf_set_lines(buf, 1, 2, false, { text })
+end
+
 ---Reads the persisted session (if any) and re-applies it: restores the
 --- prompt fields/input and active provider, re-runs the last search, then
 --- reapplies the saved filter/sort once the search completes.
@@ -79,8 +90,16 @@ function M.restore()
   if type(data.fields) == "table" then prompt_config.set_fields(data.fields) end
 
   if type(data.input) == "table" then
-    for field, text in pairs(data.input) do
-      prompt_state.set_field_text(field, text)
+    -- Every input field, not only the saved ones (a field typed into after
+    -- the save would keep its text and join the next search), and into the
+    -- field buffers too: they outlive close/open, and a prompt showing other
+    -- text than the state searched for something the user could not see.
+    for _, field in ipairs(prompt_config.get_available_fields()) do
+      if field ~= "prefix" then
+        local text = type(data.input[field]) == "string" and data.input[field] or ""
+        prompt_state.set_field_text(field, text)
+        show_in_prompt(field, text)
+      end
     end
   end
 
