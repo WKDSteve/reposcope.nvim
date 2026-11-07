@@ -94,6 +94,7 @@ local specs = {
   "provider_controller_spec.lua",
   -- Metrics
   "metrics_spec.lua",
+  "stats_view_spec.lua",
   -- Bindings, health and UI-facing actions
   "bindings_spec.lua",
   "health_spec.lua",

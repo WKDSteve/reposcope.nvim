@@ -95,6 +95,7 @@ return {
 
     { keys = ":Reposcope stats<CR>" },
     { wait = [[_G.focused("Reposcope Request Statistics")]] },
+    { expect = [[_G.focused("Counting is off (metrics = false)")]], note = "metrics off (the default): it says so" },
     { lua = [[_G.hits = tonumber(_G.text():match("Session:.-Cache Hits: (%d+)"))]] },
     { keys = "q" },
     { lua = [[require("reposcope.utils.metrics").set_record_metrics(true)]], note = "metrics = true" },
@@ -112,6 +113,7 @@ return {
       expect = [[tonumber(_G.text():match("Session:.-Cache Hits: (%d+)")) > _G.hits]],
       note = "the numbers move",
     },
+    { expect = [[not _G.focused("Counting is off")]], note = "and the hint is gone" },
     { keys = "q" },
 
     {

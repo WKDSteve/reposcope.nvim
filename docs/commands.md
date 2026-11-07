@@ -115,7 +115,7 @@ subcommand; remaining arguments are forwarded to it.
 | `:Reposcope toggle-dev`      | Toggles developer mode (enables debug logging, internal info, etc.)      |
 | `:Reposcope print-dev`       | Prints whether developer mode is currently active                        |
 | `:Reposcope skipped-readmes` | Shows number of skipped README fetches (debounced during fast scrolling) |
-| `:Reposcope stats`           | Displays collected request stats and metrics                             |
+| `:Reposcope stats`           | Displays collected request stats and metrics; with `metrics = false` (the default) it says that counting is off and how to turn it on |
 
 > Run `:Reposcope` with no subcommand to print this list in Neovim, and use
 > `<Tab>` completion to cycle through subcommands and their arguments.

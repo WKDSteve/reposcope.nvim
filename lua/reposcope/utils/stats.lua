@@ -64,6 +64,18 @@ function M.show_stats()
     "Average Duration (ms): " .. average_duration,
     "Most Frequent Query: " .. (most_frequent_query or "N/A"),
   }
+  -- With `metrics = false` (the default) nothing is counted, and a window of
+  -- zeros reads like a broken counter: say so, and how to turn it on.
+  if not metrics.record_metrics() then
+    local hint = {
+      "Counting is off (metrics = false), so these stay at 0.",
+      "Turn it on: setup({ metrics = true })",
+      "",
+    }
+    for i = #hint, 1, -1 do
+      table.insert(lines, 3, hint[i])
+    end
+  end
 
   stats_state.buf = require("reposcope.utils.protection").create_named_buffer("reposcope://stats")
   buf_set_lines(stats_state.buf, 0, -1, false, lines)
