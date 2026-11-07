@@ -80,7 +80,13 @@ function M.show_stats()
   stats_state.buf = require("reposcope.utils.protection").create_named_buffer("reposcope://stats")
   buf_set_lines(stats_state.buf, 0, -1, false, lines)
 
+  -- As wide as the widest line (the "Counting is off" hint, a long query): the
+  -- float wraps, and a wrapped line pushed the last one below its `height`.
   local width = 50
+  for i = 1, #lines do
+    width = math.max(width, vim.fn.strdisplaywidth(lines[i]))
+  end
+  width = math.max(1, math.min(width, vim.o.columns - 4))
   local height = #lines
   stats_state.win = open_win(stats_state.buf, true, {
     relative = "editor",

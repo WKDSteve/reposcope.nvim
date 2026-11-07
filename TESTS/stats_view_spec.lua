@@ -11,7 +11,13 @@ return function(H)
 
   local function shown()
     stats.show_stats()
-    local text = table.concat(vim.api.nvim_buf_get_lines(0, 0, -1, false), "\n")
+    local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+    local text = table.concat(lines, "\n")
+    -- The float wraps: a line wider than the window pushes the last line out of its height.
+    local win_width = vim.api.nvim_win_get_width(0)
+    for _, line in ipairs(lines) do
+      H.ok(vim.fn.strdisplaywidth(line) <= win_width, "the window fits the line: " .. line)
+    end
     stats.close_stats()
     return text
   end
