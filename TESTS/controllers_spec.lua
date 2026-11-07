@@ -230,9 +230,14 @@ return function(H)
   ---------------------------------------------------------------------------
   local function with_start_view(favorites, fn)
     local env = { cached = nil, warmed = {}, displayed = 0, readme_fetches = 0, notes = {} }
+    -- The selection of a former search, kept across close/open.
+    env.ui_state = { list = { last_selected_line = 2 } }
+    env.list_window = { highlighted_line = 2 }
 
     H.with_stubs(
       {
+        ["reposcope.state.ui.ui_state"] = env.ui_state,
+        ["reposcope.ui.list.list_window"] = env.list_window,
         ["reposcope.state.favorites_state"] = {
           list = function() return favorites end,
         },
@@ -294,6 +299,8 @@ return function(H)
     H.eq(env.warmed[1].content, "# Telescope", "with the snapshotted content")
     H.eq(env.warmed[1].repo, "telescope.nvim", "for the right repository")
 
+    H.eq(env.ui_state.list.last_selected_line, 1, "the first favourite is selected, not the former search's row 2")
+    H.eq(env.list_window.highlighted_line, 1, "and highlighted, so the preview is fetched for it")
     H.eq(env.displayed, 1, "the list is drawn once")
     H.eq(env.readme_fetches, 1, "and the preview is primed for the first entry")
     H.contains(env.notes[#env.notes], "Showing 2 favorites", "the user is told how many, in the plural")

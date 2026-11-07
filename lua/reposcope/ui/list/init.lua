@@ -24,9 +24,16 @@ function M.initialize()
     return
   end
 
-  -- Check if there are reseults from former prompt search in the list
-  local actual_repo_list = get_list()
-  if #actual_repo_list[1] > 1 then vim.schedule(function() show_list(actual_repo_list) end) end
+  -- Redraw the results of a former search, if any. The list is read when the
+  -- tick comes, not now: `open_ui()` shows the favorites (the start view) in
+  -- between, and a snapshot taken here drew the old search over them while
+  -- the cache already held only the favorites.
+  if #get_list()[1] > 1 then
+    vim.schedule(function()
+      local actual_repo_list = get_list()
+      if #actual_repo_list[1] > 1 then show_list(actual_repo_list) end
+    end)
+  end
 end
 
 return M

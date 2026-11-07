@@ -57,6 +57,11 @@ function M.show_favorites_if_any()
   end
 
   repository_cache.set({ total_count = #items, items = items }, true)
+  -- A new result set starts at its first entry. The row the former search had
+  -- selected (kept across close/open) may not exist among the favorites, and
+  -- then no README was previewed at all.
+  require("reposcope.state.ui.ui_state").list.last_selected_line = 1
+  require("reposcope.ui.list.list_window").highlighted_line = 1
   list_controller.display_repositories()
   require("reposcope.controllers.provider_controller").fetch_readme_for_selected()
 
