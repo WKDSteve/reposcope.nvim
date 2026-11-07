@@ -7,7 +7,7 @@ return {
   plugin = "reposcope",
   -- How the spec files are run: "auto" = sniffed per file, "h" = on the project's own TESTS/harness.lua,
   -- "script" = a self-running script in its own process.
-  dialect = "h",
+  dialect = { ["TESTS/sheets_spec.lua"] = "busted", ["*"] = "h" },
   -- Dependencies (directory names) put on the runtimepath: $<NAME>_DIR, .deps/<name>, ../<name>,
   -- stdpath('data')/lazy/<name>.
   deps = { "lib.nvim", "ui.nvim" },
@@ -17,8 +17,13 @@ return {
   -- groups they never close (148 state findings in one shared editor); one editor per file keeps
   -- that from reaching the next file.
   isolated = "file",
+  -- All test sheets run in one spec file, one child editor each: the defaults of 10 s per case and 60 s per file
+  -- are reached under load (fileops, 2026-11-07).
+  timeouts = { case_ms = 30000, file_ms = 300000 },
   -- Environment variables the specs read; a child editor inherits an allowlist only (never secrets).
-  env_allow = { "MAGICK_*" },
+  -- HOVER_NVIM_DIR: the way hover.nvim reaches the test sheets from the worktree of `ci commit`, where it is no
+  -- sibling (TESTS/minimal_init.lua finds it, only the sheets put it on their runtimepath).
+  env_allow = { "MAGICK_*", "HOVER_NVIM_DIR" },
   -- Guards (docs/GUARDS.md): the suite is clean for all of them, so every one is an error.
   guards = {
     fs = "error",
@@ -42,6 +47,10 @@ return {
       "TESTS/.fixture-query_stats",
       "TESTS/.fixture-readme_cache",
       "TESTS/.fixture-session_state",
+    },
+    spawn = {
+      -- sheets_spec.lua: every test sheet (TESTS/sheets/) runs in a child editor.
+      "nvim",
     },
   },
   -- The runner counts which commands, keymaps and autocommands the specs exercise (docs/SURFACE.md of testing.nvim);

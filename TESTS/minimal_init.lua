@@ -14,7 +14,13 @@
 local this = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":p")
 local root = vim.fs.dirname(vim.fs.dirname(vim.fs.normalize(this)))
 
-local DEPS = { "testing.nvim", "lib.nvim", "ui.nvim" }
+local DEPS = { "testing.nvim", "lib.nvim", "ui.nvim", "hover.nvim" }
+
+-- Found like the others (`ci commit` hands it over as $HOVER_NVIM_DIR because it is named above), but left off the
+-- runtimepath: the specs stub `hover.registry` themselves (TESTS/hover_spec.lua). The test sheets of section 3 run
+-- the real hover.nvim and add it in their child editor (TESTS/sheets/_helpers.lua, vim.g.reposcope_sheets_hover_nvim).
+---@type table<string, true>
+local SHEETS_ONLY = { ["hover.nvim"] = true }
 
 ---@type table<string, string>
 local MARKERS = { ["lib.nvim"] = "lua/lib/nvim", ["testing.nvim"] = "lua/testing" }
@@ -71,7 +77,8 @@ end
 
 vim.opt.rtp:prepend(root)
 for _, name in ipairs(DEPS) do
-  vim.opt.rtp:append(found[name])
+  if not SHEETS_ONLY[name] then vim.opt.rtp:append(found[name]) end
 end
+vim.g.reposcope_sheets_hover_nvim = found["hover.nvim"]
 
 return { root = root, deps = found }

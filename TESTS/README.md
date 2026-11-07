@@ -26,7 +26,7 @@ way, so the suite cannot run without either (nor without testing.nvim itself).
 `scripts/test.sh` resolves each dependency in this order and exits 1, naming
 all four places, when one is missing:
 
-1. `$TESTING_NVIM_DIR` / `$LIB_NVIM_DIR` / `$UI_NVIM_DIR`
+1. `$TESTING_NVIM_DIR` / `$LIB_NVIM_DIR` / `$UI_NVIM_DIR` / `$HOVER_NVIM_DIR`
 2. `.deps/<name>` (what CI checks out)
 3. a sibling checkout, `../<name>`
 4. the lazy.nvim-managed copy under `stdpath("data")/lazy/<name>`
@@ -35,6 +35,10 @@ An override that is set but invalid is an error, never skipped. A sibling wins
 over the plugin-manager copy on purpose: that one is often older than the
 working checkout, and testing against a stale lib.nvim/ui.nvim gives
 misleading failures.
+
+hover.nvim is looked up the same way by `minimal_init.lua` (a missing one is
+fatal there too), but only the test sheets put it on their runtimepath (see
+"Test sheets" below).
 
 ## No network, no processes
 
@@ -227,6 +231,22 @@ and `request_tools_spec.lua`.
 - **The real requests and the real `git`** — every branch *around* them is
   covered through the seams listed above; only the syscall itself is absent,
   on purpose.
+
+## Test sheets
+
+`TESTS/sheets/*.sheet.lua` are the live checks of the hand checklist
+(`ALL/manual-test-checklists/reposcope.md` in the tasks vault), written as
+data for testing.nvim's `testing.sheet` (its `docs/SHEETS.md`) and run by
+`sheets_spec.lua`, each in a child editor that is driven through the real
+`:Reposcope` command and the real keys. Unlike the specs they do spawn that
+child, but they never reach a host either: `sheets/_helpers.lua` replaces the
+three request tools with a fake that answers from a fixture and records every
+URL, points `stdpath("cache")` at a temp directory (no real favorites,
+sessions or READMEs are read or written) and records what would go to the
+browser. The hover sheets run the real hover.nvim: `minimal_init.lua` finds it
+like the other dependencies but leaves it off the runtimepath of the specs.
+What only a person can check (a real search with a token, cloning, GitLab,
+the `<C-p>` image) stays in the checklist.
 
 ## Adding a spec
 
