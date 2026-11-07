@@ -36,6 +36,7 @@ return function(H)
       ["reposcope.controllers.list_controller"] = { display_repositories = record("display") },
       ["reposcope.cache.repository_cache"] = {
         restore_relevance_sorting = record("restore_relevance"),
+        forget_favorites_view = function() return false end,
         get = function() return { items = env.items or {} } end,
       },
       ["reposcope.ui.prompt.prompt_config"] = {

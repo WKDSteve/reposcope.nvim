@@ -57,6 +57,7 @@ function M.show_favorites_if_any()
   end
 
   repository_cache.set({ total_count = #items, items = items }, true)
+  repository_cache.origin = "favorites"
   -- A new result set starts at its first entry. The row the former search had
   -- selected (kept across close/open) may not exist among the favorites, and
   -- then no README was previewed at all.

@@ -41,6 +41,7 @@ return {
       -- (one per spec that needs a cache, session or log file on disk).
       "TESTS/.fixture-clone",
       "TESTS/.fixture-config_options",
+      "TESTS/.fixture-favorites_clear",
       "TESTS/.fixture-favorites_state",
       "TESTS/.fixture-metrics",
       "TESTS/.fixture-protection",

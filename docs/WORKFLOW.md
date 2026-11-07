@@ -126,7 +126,10 @@ This is what makes `:Reposcope start` behave differently depending on
 history: with any favorites saved, the repository list is pre-populated
 from them immediately (`controllers/start_view_controller.lua`) — no prompt,
 no network call, first entry's preview already warm. Without favorites, you
-get the plain empty prompt. In other words, favorites function as a
+get the plain empty prompt. `:Reposcope favorites clear` takes that list along
+(the list on screen as well), so the next `:Reposcope start` of the same
+session is the empty prompt too, not the favorites just cleared; the results
+of a real search stay. In other words, favorites function as a
 lightweight, always-on alternative to session save/restore for the
 repositories you actually care to keep coming back to, while sessions cover
 the exact *search* you were mid-way through.

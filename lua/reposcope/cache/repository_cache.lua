@@ -96,7 +96,11 @@ end
 ---@param is_original? boolean Whether this is the original API response (default: false)
 ---@return nil
 function M.set(json, is_original)
-  if is_original == true then M.relevance_result = vim.deepcopy(json) end
+  if is_original == true then
+    M.relevance_result = vim.deepcopy(json)
+    -- A new original result set: whoever made it says where it came from (the start view does).
+    M.origin = nil
+  end
   local sanitize = _sanitize_repo
   local build = _build_repo_line
   local items = json.items or {}
@@ -229,5 +233,22 @@ end
 --- are not reused when `relevance` sorting is triggered via `:Reposcope sort`.
 ---@return nil
 function M.clear_relevance_result() M.relevance_result = nil end
+
+---Where the current result set came from: "favorites" when the start view made
+--- it of the saved favorites, nil for a search. Filter and sort keep it.
+---@type "favorites"|nil
+M.origin = nil
+
+---Forgets the result set when the start view made it of the favorites, so
+--- clearing the favorites takes it along (a later `:Reposcope start` of the
+--- session would redraw it as the former results). A search's results stay.
+---@return boolean forgotten
+function M.forget_favorites_view()
+  if M.origin ~= "favorites" then return false end
+  M.clear()
+  M.relevance_result = nil
+  M.origin = nil
+  return true
+end
 
 return M

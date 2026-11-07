@@ -73,6 +73,7 @@ local specs = {
   "session_state_spec.lua",
   "query_stats_spec.lua",
   "favorites_state_spec.lua",
+  "favorites_clear_spec.lua",
   -- Caches
   "repository_cache_spec.lua",
   "repository_cache_selection_spec.lua",

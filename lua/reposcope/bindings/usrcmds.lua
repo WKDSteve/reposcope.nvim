@@ -174,6 +174,16 @@ local subcommands = {
         require("reposcope.ui.actions.favorites_view").show()
       elseif action == "clear" then
         require("reposcope.state.favorites_state").clear_all()
+        -- The start view's result set was made of them: it goes too, on screen as well.
+        if require("reposcope.cache.repository_cache").forget_favorites_view() then
+          local buf = require("reposcope.state.ui.ui_state").buffers.list
+          if type(buf) == "number" and vim.api.nvim_buf_is_valid(buf) then
+            vim.bo[buf].modifiable = true
+            vim.api.nvim_buf_set_lines(buf, 0, -1, false, {})
+            vim.bo[buf].modifiable = false
+            require("reposcope.ui.preview.preview_manager").clear_preview()
+          end
+        end
         info("[reposcope] Favorites cleared.")
       else
         notify("[reposcope] Usage: :Reposcope favorites list|clear", vim.log.levels.WARN)
