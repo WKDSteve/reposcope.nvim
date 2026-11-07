@@ -56,5 +56,6 @@
 ---@field get fun(): RepositoryResponse Returns the currently cached repositories
 ---@field get_by_name fun(repo_name: string): Repository|nil Returns a repository object by name
 ---@field get_selected fun(): Repository|nil Returns the currently selected repository
+---@field parse_line fun(line: string): string|nil, string|nil Owner and name of a list row ("owner/name: description")
 ---@field get_list fun(): string[] Returns the display-ready list for the UI
 ---@field clear fun(): nil Clears the repository cache

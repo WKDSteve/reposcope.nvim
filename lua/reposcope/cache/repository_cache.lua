@@ -149,6 +149,16 @@ function M.get_list()
   return list
 end
 
+---Owner and name of a row of the list, which `M.set` builds as "owner/name: description".
+--- The one reader of that format: the selection and the favorite marks both go through it.
+---@param line string
+---@return string|nil owner
+---@return string|nil name
+function M.parse_line(line)
+  if type(line) ~= "string" then return nil, nil end
+  return line:match("^([^/]+)/([^:]+)")
+end
+
 ---Retrieves the currently selected repository based on the list entry.
 ---@return Repository|nil
 function M.get_selected()
@@ -182,8 +192,7 @@ function M.get_selected()
     return nil
   end
 
-  -- Expected format: "username/reponame: description"
-  local owner, repo_name = line:match("([^/]+)/([^:]+)")
+  local owner, repo_name = M.parse_line(line)
   if not owner or not repo_name then
     notify("[reposcope] Invalid list line format: " .. line, 4)
     return nil

@@ -236,9 +236,11 @@ function M.mark_favorites()
   end
 
   local is_favorite = require("reposcope.state.favorites_state").is_favorite
+  -- The row format has one reader (repository_cache requires this module, so it is required here, not at load).
+  local parse_line = require("reposcope.cache.repository_cache").parse_line
   local lines = nvim_buf_get_lines(buf, 0, -1, false)
   for i = 1, #lines do
-    local owner, name = lines[i]:match("^([^/]+)/([^:]+)")
+    local owner, name = parse_line(lines[i])
     if owner and is_favorite(owner, name) then
       nvim_buf_set_extmark(buf, FAVORITE_NS, i - 1, 0, {
         virt_text = { { mark, "ReposcopeFavorite" } },
