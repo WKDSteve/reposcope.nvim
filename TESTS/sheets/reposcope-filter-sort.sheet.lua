@@ -64,5 +64,21 @@ return {
     { wait = [[_G.focused("relevance")]] },
     { keys = "<CR>", note = "name" },
     { wait = [[_G.list()[1]:find("carol/beacon", 1, true) ~= nil]], note = "alphabetical by name" },
+
+    { keys = ":Reposcope filter prism<CR>" },
+    { wait = [[#_G.list() == 1]] },
+    { keys = ":Reposcope filter-clear<CR>", note = "the bindings checklist: filter-clear" },
+    { wait = [[#_G.list() == #_G.fixture and _G.list()[1]:find("alice/spotlight", 1, true) ~= nil]] },
+
+    { keys = ":Reposcope prompt prefix keywords<CR>", note = "the bindings checklist: prompt" },
+    {
+      wait = [[vim.deep_equal(require("reposcope.ui.prompt.prompt_config").get_fields(), { "prefix", "keywords" })
+        and _G.in_field("keywords")]],
+      note = "the UI reopens with these fields",
+    },
+    {
+      expect = [[vim.fn.bufwinid("reposcope://prompt_keywords") ~= -1 and vim.fn.bufwinid("reposcope://prompt_owner") == -1]],
+      note = "owner is no longer shown",
+    },
   },
 }
