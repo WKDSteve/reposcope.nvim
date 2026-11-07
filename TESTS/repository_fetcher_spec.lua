@@ -245,16 +245,10 @@ return function(H)
       H.ok(cache.relevance_result, "the untouched response is kept for relevance sorting")
       H.eq(#cache.relevance_result.items, 2, "with all items")
 
-      -- BUG: the "N repositories received" line reads
-      --   "[reposcope] " .. #parsed.items or 0 .. " repositories received..."
-      -- and `..` binds tighter than `or`, so the whole message collapses to the
-      -- left operand: the count is printed, the sentence that explains it never
-      -- is. Cosmetic, dev-mode only -- but it is also the only place in the
-      -- three fetchers where the count is reported at all, and the GitLab and
-      -- Codeberg fetchers next to it get the same sentence right.
-      local last = notes[#notes]
-      H.eq(last, "[reposcope] 2", "BUG: the success message is truncated to the bare count")
-      H.excludes(last, "repositories received", "BUG: the explaining half never reaches the user")
+      -- The count and the sentence that explains it, as the GitLab and Codeberg
+      -- fetchers report it (`..` binds tighter than `or`: the line once
+      -- collapsed to "[reposcope] 2").
+      H.eq(notes[#notes], "[reposcope] 2 repositories received from GitHub.", "the count is reported in full")
     end
   )
 
