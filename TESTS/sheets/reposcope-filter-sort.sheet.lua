@@ -11,7 +11,7 @@ return {
     { keys = ":Reposcope start<CR>" },
     { wait = [[_G.in_field("keywords") and vim.fn.mode() == "i"]] },
     { input = "light" },
-    { wait = [[_G.field("keywords") == "light"]] },
+    { wait = [[_G.typed("keywords", "light")]] },
     { input = "<CR>" },
     { wait = [[#_G.list() == #_G.fixture and _G.list()[1] ~= ""]] },
     { input = "<Esc>" },

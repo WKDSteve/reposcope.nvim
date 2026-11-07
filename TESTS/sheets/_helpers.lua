@@ -197,6 +197,16 @@ function _G.focused(part) return _G.text():find(part, 1, true) ~= nil end
 ---@param opts table|nil
 function _G.setup(opts) require("reposcope").setup(opts or {}) end
 
+---Field `name` shows `text` and the prompt state has it (what a search reads). The state follows the field on
+---TextChangedI, which fires once the typed keys are through: a key queued right behind the text (a <Tab> to the next
+---field) would otherwise arrive first, which a person typing never does.
+---@param name string
+---@param text string
+---@return boolean
+function _G.typed(name, text)
+  return _G.field(name) == text and require("reposcope.state.ui.prompt_state").get_field_text(name) == text
+end
+
 ---The cursor is in prompt field `name`.
 ---@param name string
 ---@return boolean

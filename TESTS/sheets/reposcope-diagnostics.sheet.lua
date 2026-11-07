@@ -83,7 +83,7 @@ return {
     { keys = ":Reposcope start<CR>" },
     { wait = [[_G.in_field("keywords") and vim.fn.mode() == "i"]] },
     { input = "light" },
-    { wait = [[_G.field("keywords") == "light"]] },
+    { wait = [[_G.typed("keywords", "light")]] },
     { input = "<CR>" },
     { wait = [[_G.noted("7 repositories received from GitHub.")]], note = "dev mode: the debug notices" },
     { expect = [[_G.noted("REPOSCOPE START SEQUENCE FINISHED")]] },

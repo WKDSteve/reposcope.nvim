@@ -12,7 +12,7 @@ return {
     { wait = [[_G.in_field("keywords") and vim.fn.mode() == "i"]] },
     { expect = [[_G.list()[1] == "" or #_G.list() == 0]], note = "no favorites yet: the plain empty prompt" },
     { input = "light" },
-    { wait = [[_G.field("keywords") == "light"]] },
+    { wait = [[_G.typed("keywords", "light")]] },
     { input = "<CR>" },
     { wait = [[_G.preview():find("README of alice/spotlight", 1, true) ~= nil]] },
     { input = "<Down>" },

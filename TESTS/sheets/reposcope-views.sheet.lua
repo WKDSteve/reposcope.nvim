@@ -15,7 +15,7 @@ return {
     { keys = ":Reposcope start<CR>" },
     { wait = [[_G.in_field("keywords") and vim.fn.mode() == "i"]] },
     { input = "spotlight" },
-    { wait = [[_G.field("keywords") == "spotlight"]] },
+    { wait = [[_G.typed("keywords", "spotlight")]] },
     { input = "<CR>" },
     { wait = [[_G.preview():find("README of alice/spotlight", 1, true) ~= nil]] },
 

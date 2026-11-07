@@ -148,7 +148,9 @@ return function(H)
       call()
       call()
       H.eq(calls, 0, "nothing runs while the timer is still pending")
-      vim.wait(200, function() return calls > 0 end)
+      -- The cap only bounds a failure: the wait ends as soon as the call ran. 200 ms were reached on a loaded
+      -- macOS runner (2026-11-07) before a 20 ms timer fired.
+      vim.wait(2000, function() return calls > 0 end)
       H.eq(calls, 1, "three rapid calls collapse into one -- this is the list-navigation guard")
 
       local ran = 0
@@ -156,7 +158,7 @@ return function(H)
       counted()
       counted()
       counted()
-      vim.wait(200, function() return ran > 0 end)
+      vim.wait(2000, function() return ran > 0 end)
       H.eq(ran, 1, "the counting variant also runs once")
       H.eq(skipped(), 2, "and reports how many calls it swallowed -- what `:Reposcope skipped-readmes` prints")
     end
