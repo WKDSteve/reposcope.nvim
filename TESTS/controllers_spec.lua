@@ -88,9 +88,20 @@ return function(H)
     width = 20,
     response = { items = { { name = "n", owner = { login = "o" }, description = string.rep("x", 200) } } },
   }, function(controller, env)
+    local config = require("reposcope.config")
+    local saved_mark = config.options.favorite_mark
+    config.options.favorite_mark = ""
     controller.display_repositories()
     H.eq(#env.displayed[1], 19, "a long line is cut to the list width")
     H.contains(env.displayed[1], "...", "with an ellipsis")
+
+    -- The favorite mark is drawn in front of a favorited row: the cut leaves room for it, or the
+    -- ellipsis of a long favorited row ends up past the window's edge.
+    config.options.favorite_mark = "\u{2605} "
+    controller.display_repositories()
+    config.options.favorite_mark = saved_mark
+    H.eq(#env.displayed[1], 17, "a long line leaves the columns of the favorite mark free")
+    H.eq(env.displayed[1]:sub(-3), "...", "and still ends in the ellipsis")
   end)
 
   -- Fields the API may omit, or send as JSON null (which decodes to vim.NIL).

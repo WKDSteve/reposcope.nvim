@@ -35,7 +35,11 @@ function M.display_repositories()
     return
   end
 
-  local list_width = math.floor(list_config.width - 1)
+  -- A favorited row gets `favorite_mark` drawn in front of it (inline virtual text, list_window.mark_favorites),
+  -- which takes columns of the window: every row leaves room for it, since a toggle redraws the marks only.
+  local mark = require("reposcope.config").get_option("favorite_mark")
+  local mark_width = type(mark) == "string" and vim.fn.strdisplaywidth(mark) or 0
+  local list_width = math.floor(list_config.width - 1) - mark_width
 
   -- Prepare local aliases for hot-loop efficiency
   ---@type Repository[]
