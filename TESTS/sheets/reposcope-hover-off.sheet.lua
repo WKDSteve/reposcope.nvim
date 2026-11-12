@@ -2,6 +2,7 @@
 -- ALL/manual-test-checklists/reposcope.md). Fake request tools and a temp cache directory (TESTS/sheets/_helpers.lua).
 return {
   id = "reposcope.hover-off",
+  feature = "reposcope.hover",
   title = "reposcope.nvim: without hover.nvim, or with hover = false, a cached owner/repo shows nothing and no error",
   task = "reposcope.nvim/manual-checklist-run",
   sizes = { { rows = 30, cols = 100 } },

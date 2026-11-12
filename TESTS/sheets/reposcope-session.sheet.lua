@@ -3,6 +3,7 @@
 -- (TESTS/sheets/_helpers.lua): no network, the real session.json is never touched.
 return {
   id = "reposcope.session",
+  feature = "reposcope.session",
   title = "reposcope.nvim: a saved session restores provider, query, filter and sort, asynchronously; clear forgets it",
   task = "reposcope.nvim/manual-checklist-run",
   sizes = { { rows = 40, cols = 140 } },

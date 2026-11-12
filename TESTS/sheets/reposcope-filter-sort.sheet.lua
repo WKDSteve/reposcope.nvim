@@ -3,6 +3,7 @@
 -- (TESTS/sheets/_helpers.lua): no network.
 return {
   id = "reposcope.filter-sort",
+  feature = "reposcope.filter-sort",
   title = "reposcope.nvim: filter completes from the result set, matches the description, resets; filter-prompt; sort",
   task = "reposcope.nvim/manual-checklist-run",
   sizes = { { rows = 40, cols = 140 } },

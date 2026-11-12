@@ -3,6 +3,7 @@
 -- the runtimepath), fake request tools and a temp cache directory (TESTS/sheets/_helpers.lua): no network.
 return {
   id = "reposcope.hover",
+  feature = "reposcope.hover",
   title = "reposcope.nvim: hover previews a cached owner/repo, declines prose and paths, :Hover show fetches once",
   task = "reposcope.nvim/manual-checklist-run",
   sizes = { { rows = 40, cols = 140 } },

@@ -4,6 +4,7 @@
 -- is put into the file cache before the plugin starts, as a former session would have left it.
 return {
   id = "reposcope.cache-queries",
+  feature = "reposcope.readme-cache",
   title = "reposcope.nvim: top results pre-cached, file cache without a request, fast scrolling debounced, queries",
   task = "reposcope.nvim/manual-checklist-run",
   sizes = { { rows = 40, cols = 140 } },

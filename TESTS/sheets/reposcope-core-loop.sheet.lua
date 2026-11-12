@@ -2,6 +2,7 @@
 -- ALL/manual-test-checklists/reposcope.md). The request tools are a fake (TESTS/sheets/_helpers.lua): no network.
 return {
   id = "reposcope.core-loop",
+  feature = "reposcope.search",
   title = "reposcope.nvim: a search fills the list, moving the selection previews that README, a count moves once",
   task = "reposcope.nvim/manual-checklist-run",
   sizes = { { rows = 40, cols = 140 } },

@@ -4,6 +4,7 @@
 -- cache directory (TESTS/sheets/_helpers.lua): no network.
 return {
   id = "reposcope.diagnostics",
+  feature = "reposcope.diagnostics",
   title = "reposcope.nvim: checkhealth, providers, notices as popups or vim.notify, messages, dev mode, stats",
   task = "reposcope.nvim/manual-checklist-run",
   sizes = { { rows = 40, cols = 140 } },

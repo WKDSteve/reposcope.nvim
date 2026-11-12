@@ -3,6 +3,7 @@
 -- recording opener (TESTS/sheets/_helpers.lua): no network, no browser.
 return {
   id = "reposcope.views",
+  feature = "reposcope.views",
   title = "reposcope.nvim: <C-v> viewer (HTML to the browser), <C-b> scratch buffer, ? cheatsheet, <Esc> closes all",
   task = "reposcope.nvim/manual-checklist-run",
   sizes = { { rows = 40, cols = 140 } },

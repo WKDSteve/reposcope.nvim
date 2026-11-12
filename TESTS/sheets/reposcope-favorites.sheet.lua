@@ -3,6 +3,7 @@
 -- temp cache directory (TESTS/sheets/_helpers.lua): no network, the real favorites.json is never touched.
 return {
   id = "reposcope.favorites",
+  feature = "reposcope.favorites",
   title = "reposcope.nvim: <C-f> toggles a favorite, the list shows it, a fresh start shows favorites without a request",
   task = "reposcope.nvim/manual-checklist-run",
   sizes = { { rows = 40, cols = 140 } },
