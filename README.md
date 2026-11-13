@@ -92,3 +92,16 @@ question each page answers.
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 reposcope.nvim is released under the [MIT License](https://opensource.org/licenses/MIT).
+
+<!-- connections:begin (written by the app-icons tool of the workshop; change integrations.json there, not this block) -->
+## Connections
+
+![reposcope.nvim: what it uses and what uses it](assets/graphs/reposcope.nvim.png)
+
+**Uses**
+
+- [hover.nvim](https://github.com/WKDSteve/hover.nvim): reposcope.nvim registers its README preview as a source of hover.nvim and asks it to show the float (`hover.show`) once the README has been fetched. ([picture](assets/graphs/pair/reposcope.nvim--hover.nvim.png))
+- [images.nvim](https://github.com/WKDSteve/images.nvim): The README image preview of reposcope.nvim uses images.nvim (`images.config`). ([picture](assets/graphs/pair/reposcope.nvim--images.nvim.png))
+- [ui.nvim](https://github.com/WKDSteve/ui.nvim): The favorites view and the filter prompt of reposcope.nvim are built on the kit of ui.nvim (`ui.kit`). ([picture](assets/graphs/pair/reposcope.nvim--ui.nvim.png))
+- [lib.nvim](https://github.com/WKDSteve/lib.nvim): the shared base of the plugins.
+<!-- connections:end -->
