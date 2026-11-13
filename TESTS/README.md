@@ -252,8 +252,10 @@ the `<C-p>` image) stays in the checklist.
 
 Write `TESTS/<name>_spec.lua` returning `function(H) ... end`, then list it in
 `run.lua` at the layer it belongs to (a spec missing there still runs, last,
-with a note). The order matters: with plain alphabetical order `utils_spec.lua`
-fails (see `run.lua`). `H` is the harness:
+with a note). Every spec file runs in its own nvim (`isolated = "file"`), so the
+order does not change a result under testing.nvim; it only matters when the
+specs share one nvim (the standalone loop of `run.lua`, or `--isolated none`;
+see `run.lua`). `H` is the harness:
 
 - assertions: `eq`, `ok`, `falsy`, `contains`, `excludes`, `has`, `lacks`
   (`has`/`lacks` are for list membership, e.g. argv tables)

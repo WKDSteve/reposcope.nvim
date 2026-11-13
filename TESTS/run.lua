@@ -2,9 +2,13 @@
 --
 -- The specs are run by testing.nvim: `bash scripts/test.sh`. testing.nvim never
 -- executes this file; it only takes the spec order from `specs` below and the
--- sentinel from the last print. The order is load-bearing: in alphabetical
--- order utils_spec.lua fails (it depends on state an earlier spec leaves).
--- The code below still works as the old standalone runner:
+-- sentinel from the last print. With `isolated = "file"` (.testing.lua) every
+-- spec file runs in its own nvim, so that order is no longer load-bearing:
+-- utils_spec.lua passes alone (`scripts/test.sh --file utils_spec`). It only
+-- matters when all specs share one nvim (the standalone runner below, or
+-- `--isolated none`): in plain alphabetical order utils_spec.lua was found to
+-- fail there (it depended on state an earlier spec leaves). The code below
+-- still works as the old standalone runner:
 --   nvim -n -i NONE --headless -u NONE -c "set rtp+=." -l TESTS/run.lua
 --
 -- lib.nvim and ui.nvim both have to be reachable: several reposcope
