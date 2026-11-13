@@ -14,6 +14,7 @@ cover.
 
 | Check | What a failure means |
 | --- | --- |
+| lib.nvim / ui.nvim installed | An `ERROR` names the missing plugin to install; both are required (see [requirements.md](requirements.md)), so the check stops there. ui.nvim's kit is built on lib.nvim, so without lib.nvim only lib.nvim is reported |
 | Core modules loadable | An `ERROR` here means the plugin itself failed to load; nothing below it will be meaningful. Check `:messages` for the Lua error |
 | `gh` / `curl` / `wget` installed | Each missing binary is reported individually. At least one must be present — that case is called out separately as its own `ERROR` |
 | Configured request tool | `WARN` when `request_tool` is not one of `gh`, `curl`, `wget`. See [configuration.md](configuration.md) |
@@ -21,7 +22,7 @@ cover.
 | Prompt fields configured | `WARN` for each `prompt_fields` entry rejected during the last `setup()` (unknown name, or a non-table value); when every entry is rejected the prompt falls back to the defaults instead of opening with no fields at all |
 | images.nvim present | `INFO` when it is missing: the `<C-p>` README image preview is unavailable and nothing else is affected |
 | images.nvim remote images | `INFO` when installed but `display.remote.enabled` is off — the image preview needs it on. When on, the effective download cap is reported |
-| `:Reposcope` command surface | Contributed by `lib.nvim`'s user-command composer: the subcommands actually registered |
+| `:Reposcope` command surface | Contributed by `lib.nvim`'s user-command composer: the subcommands actually registered. An `ERROR` when the installed lib.nvim has no composer (update it) |
 
 ## Notes on two of them
 

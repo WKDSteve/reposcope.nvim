@@ -10,9 +10,46 @@ local config = require("reposcope.config")
 local checks = require("reposcope.utils.checks")
 local env_has = require("reposcope.utils.env").has
 
+---@internal
+--- `pcall(require, name)` behind a seam of its own, so a spec can stub an
+--- absent dependency without touching the module cache: forcing a real
+--- `require` failure through `package.preload` keeps failing that module
+--- name in Neovim's Lua loader even after the trap is removed, poisoning every
+--- later spec in the same process (the pattern of sandbox.nvim's health.lua).
+---@param name string
+---@return boolean ok
+---@return any module_or_error
+function M._try_require(name) return pcall(require, name) end
+
 ---@return nil
 function M.check()
   health.start("Reposcope: plugin healthcheck")
+
+  ---------------------------------------------------------------------------
+  -- Required plugins (README, docs/requirements.md). Checked before the
+  -- core modules: `reposcope.init` reaches both at load time, so without one
+  -- of them the check below would answer "Reinstall reposcope.nvim" for a
+  -- plugin that is installed fine and only misses a dependency.
+  ---------------------------------------------------------------------------
+  local has_lib = M._try_require("lib.nvim")
+  if has_lib then
+    health.ok("lib.nvim found")
+  else
+    health.error("lib.nvim is not installed", {
+      "Install https://github.com/WKDSteve/lib.nvim -- reposcope.nvim requires it",
+    })
+  end
+  -- `ui.kit` re-exports lib.nvim's kit, so without lib.nvim it cannot load
+  -- whether ui.nvim is installed or not; it is only probed when lib.nvim is.
+  local has_ui = has_lib and M._try_require("ui.kit")
+  if has_ui then
+    health.ok("ui.nvim found")
+  elseif has_lib then
+    health.error("ui.nvim is not installed", {
+      "Install https://github.com/WKDSteve/ui.nvim -- reposcope.nvim requires it",
+    })
+  end
+  if not (has_lib and has_ui) then return end
 
   -- Module Load Check
   if pcall(require, "reposcope.init") then
@@ -148,7 +185,16 @@ function M.check()
     health.info("nvim-treesitter not installed: the README viewer shows plain markdown without TS highlighting")
   end
 
-  require("lib.nvim.bindings.usercmd.composer").checkhealth("Reposcope")
+  -- lib.nvim loaded above; a lib.nvim without the composer (an old one) must
+  -- end the report with that finding, not with a traceback.
+  local has_composer, composer = M._try_require("lib.nvim.bindings.usercmd.composer")
+  if has_composer and type(composer) == "table" and type(composer.checkhealth) == "function" then
+    composer.checkhealth("Reposcope")
+  else
+    health.error("lib.nvim has no usercmd composer: the :Reposcope commands cannot be checked", {
+      "Update lib.nvim",
+    })
+  end
 end
 
 return M

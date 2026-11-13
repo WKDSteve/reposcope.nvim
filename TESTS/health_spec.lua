@@ -12,7 +12,9 @@
 -- own test only passes on the author's laptop reports nothing.
 
 return function(H)
-  ---@param opts table  { available: table<string,boolean>, request_tool: string, token: boolean, images: table|false }
+  ---`opts.missing` names modules `health.lua`'s `_try_require` seam answers as absent (the real loader
+  ---stays untouched, see the seam's comment); everything else it requires for real.
+  ---@param opts table  { available: table<string,boolean>, request_tool: string, token: boolean, images: table|false, missing: table<string,boolean>? }
   ---@param fn fun(report: table[]): nil
   local function with_health(opts, fn)
     local report = {}
@@ -65,7 +67,15 @@ return function(H)
 
     local ok, err = pcall(function()
       H.with_stubs(stubs, { "reposcope.health" }, function()
-        require("reposcope.health").check()
+        local mod = require("reposcope.health")
+        if opts.missing then
+          local real = mod._try_require
+          mod._try_require = function(name)
+            if opts.missing[name] then return false, "module '" .. name .. "' not found" end
+            return real(name)
+          end
+        end
+        mod.check()
         fn(report)
       end)
     end)
@@ -96,6 +106,8 @@ return function(H)
     images = { display = { remote = { enabled = true, max_bytes = 1024 * 1024 } } },
   }, function(report)
     H.eq(report[1].kind, "start", "the check opens a section")
+    H.ok(entry(report, "ok", "lib.nvim found"), "lib.nvim is reported as present")
+    H.ok(entry(report, "ok", "ui.nvim found"), "and ui.nvim too")
     H.ok(entry(report, "ok", "Core Reposcope modules loaded"), "the modules load")
     H.ok(entry(report, "ok", "gh is installed"), "each installed tool is reported")
     H.ok(entry(report, "ok", "curl is installed"), "for all of them")
@@ -109,6 +121,55 @@ return function(H)
       "with its effective download cap"
     )
     H.falsy(entry(report, "error", ""), "and nothing is an error")
+  end)
+
+  ---------------------------------------------------------------------------
+  -- The required plugins (README, docs/requirements.md): a missing one is
+  -- named as the thing to install, before the core-module check could call
+  -- the installed plugin broken, and the check reports instead of throwing.
+  ---------------------------------------------------------------------------
+  with_health({
+    available = { curl = true },
+    request_tool = "curl",
+    token = true,
+    images = false,
+    missing = { ["lib.nvim"] = true },
+  }, function(report)
+    local err = entry(report, "error", "lib.nvim is not installed")
+    H.ok(err, "a missing lib.nvim is an error")
+    H.contains(table.concat(err.advice, " "), "WKDSteve/lib.nvim", "naming where to get it")
+    H.falsy(entry(report, "error", "Failed to load core modules"), "not a call to reinstall reposcope.nvim")
+    H.falsy(entry(report, "error", "ui.nvim"), "ui.kit needs lib.nvim, so ui.nvim is not judged without it")
+    H.falsy(entry(report, "ok", "Core Reposcope modules loaded"), "the check stops there")
+  end)
+
+  with_health({
+    available = { curl = true },
+    request_tool = "curl",
+    token = true,
+    images = false,
+    missing = { ["ui.kit"] = true },
+  }, function(report)
+    H.ok(entry(report, "ok", "lib.nvim found"), "lib.nvim is there")
+    local err = entry(report, "error", "ui.nvim is not installed")
+    H.ok(err, "a missing ui.nvim is an error")
+    H.contains(table.concat(err.advice, " "), "WKDSteve/ui.nvim", "naming where to get it")
+    H.falsy(entry(report, "error", "Failed to load core modules"), "not a call to reinstall reposcope.nvim")
+    H.falsy(entry(report, "ok", "Core Reposcope modules loaded"), "the check stops there")
+  end)
+
+  -- A lib.nvim without the usercmd composer (an old one) ends the report with that finding.
+  with_health({
+    available = { curl = true },
+    request_tool = "curl",
+    token = true,
+    images = false,
+    missing = { ["lib.nvim.bindings.usercmd.composer"] = true },
+  }, function(report)
+    H.ok(entry(report, "ok", "Core Reposcope modules loaded"), "the rest of the check runs")
+    local err = entry(report, "error", "no usercmd composer")
+    H.ok(err, "the missing composer is an error, not a traceback")
+    H.contains(table.concat(err.advice, " "), "Update lib.nvim", "with the remedy")
   end)
 
   ---------------------------------------------------------------------------
