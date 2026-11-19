@@ -1,0 +1,37 @@
+-- :Reposcope queries lists the searches by how often they were made (the fuller walk, with clear, is in
+-- reposcope-cache-queries.sheet.lua). Fake request tools and a temp cache directory (TESTS/sheets/_helpers.lua).
+return {
+  id = "reposcope.queries",
+  feature = "reposcope.queries",
+  title = "reposcope.nvim: two searches for lamp and one for torch, :Reposcope queries lists lamp first",
+  sizes = { { rows = 40, cols = 140 } },
+  steps = {
+    { lua = [[dofile(vim.fn.getcwd() .. "/TESTS/sheets/_helpers.lua"); _G.setup({ readme_precache_count = 0 })]] },
+    { keys = ":Reposcope start<CR>" },
+    { wait = [[_G.in_field("keywords") and vim.fn.mode() == "i"]] },
+    { input = "lamp" },
+    { wait = [[_G.typed("keywords", "lamp")]] },
+    { input = "<CR>" },
+    { wait = [[#_G.list() == #_G.fixture]] },
+    { input = "<End><BS><BS><BS><BS>" },
+    { wait = [[_G.typed("keywords", "")]] },
+    { input = "torch" },
+    { wait = [[_G.typed("keywords", "torch")]] },
+    { input = "<CR>" },
+    { wait = [[_G.asked("q=torch") == 1]] },
+    { input = "<End><BS><BS><BS><BS><BS>" },
+    { wait = [[_G.typed("keywords", "")]] },
+    { input = "lamp" },
+    { wait = [[_G.typed("keywords", "lamp")]] },
+    { input = "<CR>" },
+    { wait = [[_G.asked("q=lamp") == 2]], note = "three searches went out" },
+    { input = "<Esc>" },
+    { wait = [[vim.fn.mode() == "n"]] },
+    { keys = ":Reposcope queries<CR>" },
+    { wait = [[_G.focused("(2x) lamp")]] },
+    {
+      expect = [[_G.has(_G.text(), " 1. (2x) lamp") and _G.has(_G.text(), " 2. (1x) torch")]],
+      note = "most frequent first",
+    },
+  },
+}

@@ -23,11 +23,26 @@ return {
     id = "reposcope.readme-image",
     title = "<C-p> shows the README image in the preview (needs images.nvim)",
     docs = "docs/FEATURES/UI.md",
+    -- reposcope starts no process for it: images.nvim fetches and draws the image (its own sheets measure that).
+    perf = "manual:needs images.nvim with display.remote and a terminal with a graphics protocol",
   },
   {
     id = "reposcope.clone",
-    title = "The selected repository is cloned with the tool of choice (git, gh, curl, wget)",
+    title = "<C-c> clones the selected repository with the tool of choice (git, gh, curl, wget), without blocking",
+    surface = { "config:clone.type", "config:clone.std_dir", "config:prompt_keymaps.clone" },
     docs = "docs/FEATURES/PROVIDERS.md",
+  },
+  {
+    id = "reposcope.request-tools",
+    title = "Searches and READMEs go through the configured request tool: gh, curl or wget",
+    surface = { "config:request_tool", "config:preferred_requesters" },
+    docs = "docs/FEATURES/PROVIDERS.md",
+  },
+  {
+    id = "reposcope.open-browser",
+    title = "<C-v> on a repository whose README is HTML opens its page in the system browser",
+    surface = { "config:prompt_keymaps.open_viewer" },
+    docs = "docs/FEATURES/UI.md",
   },
   {
     id = "reposcope.readme-cache",

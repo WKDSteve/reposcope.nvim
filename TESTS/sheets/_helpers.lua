@@ -97,15 +97,54 @@ local function fake_request(method, url, callback)
   end, 20)
 end
 
-for _, tool in ipairs({ "gh", "curl", "wget" }) do
-  require("reposcope.network.request_tools." .. tool).request = fake_request
-end
--- No PATH probe: the fake stands in for whichever tool would be found.
-require("reposcope.utils.checks").ensure_request_tool = function() return true end
+---The search answer as JSON text, for a stand-in program that prints it.
+_G.search_body = search_body
 
--- The system opener (browser) is a recorder: `_G.opened` holds every URL handed to it.
-_G.opened = {}
-require("reposcope.utils.os").open_url = function(url) _G.opened[#_G.opened + 1] = url end
+-- A sheet that sets `_G.real_request_tools = true` (or `_G.real_opener = true`) before this file keeps the real
+-- request tools (the real system opener) and sends the programs to recording stand-ins (`_G.stand_ins` below)
+-- instead, so the plugin's own process starts run and `testing perf` sees them.
+if not _G.real_request_tools then
+  for _, tool in ipairs({ "gh", "curl", "wget" }) do
+    require("reposcope.network.request_tools." .. tool).request = fake_request
+  end
+  -- No PATH probe: the fake stands in for whichever tool would be found.
+  require("reposcope.utils.checks").ensure_request_tool = function() return true end
+end
+
+if not _G.real_opener then
+  -- The system opener (browser) is a recorder: `_G.opened` holds every URL handed to it.
+  _G.opened = {}
+  require("reposcope.utils.os").open_url = function(url) _G.opened[#_G.opened + 1] = url end
+end
+
+---Recording stand-ins (testing.fake_programs) for `programs`: every `vim.system`/`jobstart` of one of them goes to its
+---stand-in by absolute path (TESTS/sheets/fixtures/stand_in_paths.lua, which says why the PATH alone is not enough;
+---loaded with `load(text, "=name")`, so `testing perf` keeps the plugin's line as the caller). They are first on the
+---PATH too, for a probe like `executable()`.
+---@param programs table<string, Testing.FakeProgram>|string[] names, or `name = { stdout = ..., exit_code = ... }`
+---@return Testing.FakePrograms
+function _G.stand_ins(programs)
+  local fake = require("testing.fake_programs").new(programs)
+  vim.env.PATH = fake:path()
+  local path = _G.root .. "/TESTS/sheets/fixtures/stand_in_paths.lua"
+  local chunk = assert(load(table.concat(vim.fn.readfile(path), "\n"), "=reposcope_stand_in_paths"))
+  chunk(fake.dir, fake.names)
+  return fake
+end
+
+---How many calls of stand-in `program` had `part` (plain) somewhere in their arguments. The arguments are joined by
+---a space: the Windows `.cmd` stand-in splits an argument at `=` and `,`, so a part never spans one of those.
+---@param fake Testing.FakePrograms
+---@param program string
+---@param part string
+---@return integer
+function _G.called(fake, program, part)
+  local n = 0
+  for _, call in ipairs(fake:calls(program)) do
+    if table.concat(call.argv, " "):find(part, 1, true) then n = n + 1 end
+  end
+  return n
+end
 
 ---How many requests so far went to a URL holding `part` (plain).
 ---@param part string
