@@ -11,7 +11,13 @@ return {
       lua = [[_G.real_request_tools = true
       dofile(vim.fn.getcwd() .. "/TESTS/sheets/_helpers.lua")
       local answer = { stdout = _G.search_body() }
-      _G.fake = _G.stand_ins({ curl = answer, gh = answer, wget = answer })
+      -- One folder (and log) per tool: two `.cmd` stand-ins writing one log at once lose lines on Windows (testing.nvim
+      -- task fake-programs-gleichzeitige-aufrufe-unter-windows-verlieren), and the README fetch of one tool runs
+      -- while the next tool's search starts.
+      _G.fake = {}
+      for _, tool in ipairs({ "curl", "gh", "wget" }) do
+        _G.fake[tool] = _G.stand_ins({ [tool] = answer })
+      end
       _G.setup({ request_tool = "curl", readme_precache_count = 0 })]],
       note = "request_tool = curl; curl, gh and wget are stand-ins that print the search answer",
     },
@@ -27,17 +33,17 @@ return {
     },
     { expect = [[_G.has(_G.list()[1], "alice/spotlight: Search everything fast")]] },
     {
-      expect = [[_G.called(_G.fake, "curl", "api.github.com/search/repositories") >= 1]],
+      expect = [[_G.called(_G.fake.curl, "curl", "api.github.com/search/repositories") >= 1]],
       note = "curl was started with the search URL",
     },
-    { expect = [[#_G.fake:calls("gh") == 0 and #_G.fake:calls("wget") == 0]], note = "and no other tool" },
+    { expect = [[#_G.fake.gh:calls() == 0 and #_G.fake.wget:calls() == 0]], note = "and no other tool" },
     {
       lua = [[require("reposcope.config").options.request_tool = "gh"]],
       note = "the config now says gh",
     },
     { input = "<CR>", note = "the same search again" },
     {
-      wait = [[_G.called(_G.fake, "gh", "/search/repositories") >= 1 and #_G.list() == #_G.fixture]],
+      wait = [[_G.called(_G.fake.gh, "gh", "/search/repositories") >= 1 and #_G.list() == #_G.fixture]],
       timeout = 10000,
       note = "gh api answered, the list is full again",
     },
@@ -47,7 +53,7 @@ return {
     },
     { input = "<CR>" },
     {
-      wait = [[_G.called(_G.fake, "wget", "api.github.com/search/repositories") >= 1 and #_G.list() == #_G.fixture]],
+      wait = [[_G.called(_G.fake.wget, "wget", "api.github.com/search/repositories") >= 1 and #_G.list() == #_G.fixture]],
       timeout = 10000,
       note = "wget answered, the list is full again",
     },
