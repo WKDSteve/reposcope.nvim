@@ -164,16 +164,12 @@ return function(H)
     end
 
     -------------------------------------------------------------------------
-    -- The two shell entry points
+    -- The shell entry point
     -------------------------------------------------------------------------
     do
       local argv_calls = {}
       H.with_stubs({
         ["lib.nvim.cross.run_argv"] = {
-          run_blocking_captured = function(cmd)
-            argv_calls[#argv_calls + 1] = { mode = "blocking", cmd = cmd }
-            return true, "captured output"
-          end,
           run_async_captured = function(cmd, on_done)
             argv_calls[#argv_calls + 1] = { mode = "async", cmd = cmd }
             on_done(false, "it failed")
@@ -183,45 +179,18 @@ return function(H)
       }, { "reposcope.utils.protection" }, function()
         local p = require("reposcope.utils.protection")
 
-        local success, output = p.safe_execute_shell({ "git", "status", "--porcelain" })
-        H.eq(argv_calls[1].mode, "blocking", "an argv table goes to the argv runner")
-        H.eq(argv_calls[1].cmd[2], "status", "unchanged")
-        H.ok(success, "and its result is passed through")
-        H.eq(output, "captured output", "output included")
-
         local got
         local handle = p.safe_execute_shell_async(
           { "git", "clone", "url", "dir" },
           function(s, o) got = { s = s, o = o } end
         )
-        H.eq(argv_calls[2].mode, "async", "the async form goes to the async runner")
-        H.eq(#argv_calls[2].cmd, 4, "with the whole argv")
+        H.eq(argv_calls[1].mode, "async", "the argv goes to the async runner")
+        H.eq(#argv_calls[1].cmd, 4, "whole")
         H.falsy(got.s, "a failure is reported through the callback")
         H.eq(got.o, "it failed", "with the output")
         H.eq(type(handle.stop), "function", "and the caller gets a handle it can stop")
+        H.eq(p.safe_execute_shell, nil, "the blocking form is gone: nothing may freeze the editor for a clone")
       end)
-
-      -- The string form goes through `vim.fn.system`, which is bound to a
-      -- file-local at load time -- so it has to be replaced before the reload.
-      local original_system = vim.fn.system
-      local seen_cmd
-      ---@diagnostic disable-next-line: duplicate-set-field
-      vim.fn.system = function(cmd)
-        seen_cmd = cmd
-        vim.v.errmsg = ""
-        return "shell output"
-      end
-      local ok_shell, err_shell = pcall(function()
-        H.with_stubs({}, { "reposcope.utils.protection" }, function()
-          local p = require("reposcope.utils.protection")
-          local success, output = p.safe_execute_shell("echo hi")
-          H.eq(seen_cmd, "echo hi", "a string command is handed to vim.fn.system verbatim")
-          H.eq(type(success), "boolean", "the result is a boolean")
-          H.eq(output, "shell output", "with the captured output")
-        end)
-      end)
-      vim.fn.system = original_system
-      if not ok_shell then error(err_shell, 0) end
     end
   end)
 

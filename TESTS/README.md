@@ -61,8 +61,7 @@ later spec.
 | `reposcope.providers.*.readme.readme_fetcher` | `readme_manager_spec` | the managers' cache/freshness gating |
 | `reposcope.providers.*.repositories.repository_fetcher` | `repository_manager_spec` | the managers' UUID gating |
 | `reposcope.controllers.clone_executor` | `clone_spec` | the clone argv, without cloning |
-| `lib.nvim.cross.run_argv` | `protection_spec` | both shell entry points |
-| `vim.fn.system` | `protection_spec` | the string form of `safe_execute_shell` |
+| `lib.nvim.cross.run_argv` | `protection_spec` | the non-blocking shell entry point |
 | `vim.ui.input` | `provider_controller_spec` | the clone-path prompt |
 | `vim.health` | `health_spec` | `:checkhealth reposcope` |
 | `ui.kit` | `actions_spec` | the three read-only floats, at their content boundary |

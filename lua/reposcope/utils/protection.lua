@@ -8,7 +8,6 @@ local M = {}
 local fnameescape = vim.fn.fnameescape
 local fnamemodify = vim.fn.fnamemodify
 local isdirectory = vim.fn.isdirectory
-local system = vim.fn.system
 local expand = vim.fn.expand
 local nvim_buf_is_valid = vim.api.nvim_buf_is_valid
 local nvim_buf_delete = vim.api.nvim_buf_delete
@@ -201,26 +200,13 @@ function M.is_dir_writeable(dir)
   end
 end
 
----Executes a shell command safely and returns the success status and output.
----Accepts either a shell string or an argv table; a table is passed straight
----to the executable without shell interpretation, avoiding quoting pitfalls
----for arguments (e.g. paths with spaces) across platforms.
----@param command string|string[] The shell command (string) or argv (table) to be executed
----@return boolean success True if the command succeeded (exit code 0)
----@return string output The standard output (or error output) of the command
-function M.safe_execute_shell(command)
-  if type(command) == "table" then return require("lib.nvim.cross.run_argv").run_blocking_captured(command) end
-  local result = system(command)
-  if vim.v.shell_error ~= 0 then return false, result end
-  return true, result
-end
-
----Asynchronous counterpart to `safe_execute_shell` for argv tables.
+---Runs an argv table without blocking and reports the result on the main loop.
 ---
----`safe_execute_shell` blocks the UI thread until the process exits. That is
----tolerable for a quick probe, but the one real consumer is `git clone` --
----a network operation that runs for seconds and, on a large repository or a
----slow link, minutes. Neovim was frozen for all of it.
+---The one consumer is `git clone` (and the archive downloads of the other
+---clone tools) -- a network operation that runs for seconds and, on a large
+---repository or a slow link, minutes. A blocking counterpart
+---(`safe_execute_shell`) froze Neovim for all of it; it had no caller left and
+---is gone.
 ---
 ---Only the argv form is supported: it is the form the clone path uses, and it
 ---needs no shell interpretation (no quoting pitfalls for paths with spaces).
