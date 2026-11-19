@@ -58,15 +58,16 @@ return {
     { lua = [[require("reposcope.config").options.provider = "gitlab"]], note = "another provider is active" },
 
     {
-      lua = [[vim.cmd("Reposcope session restore"); _G.on_return = { n = #_G.list(), requests = #_G.requests }]],
-      note = "restore, and what the list is the moment the command returns",
+      lua = [[local before = #_G.requests
+      vim.cmd("Reposcope session restore")
+      _G.on_return = { n = #_G.list(), requests = #_G.requests - before, query = _G.requests[before + 1] }]],
+      note = "restore, and what the list is the moment the command returns; requests counted from here, not from "
+        .. "the start of the sheet (red once under testing perf, 2026-11-19, with the total of 3)",
     },
-    {
-      expect = [[_G.on_return.n == #_G.fixture and _G.on_return.requests == 3]],
-      note = "the search is under way, the list not yet filtered: asynchronous",
-    },
+    { expect = [[_G.on_return.requests == 1]], note = "the restore sent its search" },
+    { expect = [[_G.on_return.n == #_G.fixture]], note = "the list not yet filtered: asynchronous" },
     { wait = [[#_G.list() == 2 and _G.list()[1]:find("alice/prism", 1, true) ~= nil]], note = "filter and sort after" },
-    { expect = [[_G.requests[3] == _G.saved_query]], note = "the saved query, on GitHub again" },
+    { expect = [[_G.on_return.query == _G.saved_query]], note = "the saved query, on GitHub again" },
     {
       expect = [[require("reposcope.config").get_option("provider") == "github"
         and require("reposcope.state.ui.prompt_state").get_field_text("keywords") == "light"
