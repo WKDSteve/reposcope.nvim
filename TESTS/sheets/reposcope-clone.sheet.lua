@@ -14,7 +14,12 @@ return {
       _G.fake = _G.stand_ins({ "git" })
       _G.clone_dir = vim.fs.normalize(vim.fn.tempname())
       vim.fn.mkdir(_G.clone_dir, "p")
-      _G.setup({ clone = { std_dir = _G.clone_dir, type = "git" } })]],
+      _G.setup({ clone = { std_dir = _G.clone_dir, type = "git" } })
+      _G.cloned_events = {}
+      vim.api.nvim_create_autocmd("User", {
+        pattern = "ReposcopeCloned",
+        callback = function(a) _G.cloned_events[#_G.cloned_events + 1] = a.data end,
+      })]],
       note = "clone.std_dir is an empty folder; git is a stand-in",
     },
     { keys = ":Reposcope start<CR>" },
@@ -31,6 +36,11 @@ return {
     {
       expect = [[_G.called(_G.fake, "git", "clone https://github.com/bob/lantern " .. _G.clone_dir .. "/lantern") == 1]],
       note = "git clone <url> <std_dir>/<name>",
+    },
+    { wait = [[#_G.cloned_events == 1]], timeout = 10000, note = "the clone finished: User ReposcopeCloned fired once" },
+    {
+      expect = [[_G.cloned_events[1].path == _G.clone_dir .. "/lantern" and _G.cloned_events[1].url == "https://github.com/bob/lantern"]],
+      note = "with the new repository's path and its URL (gitsuite and terminal.nvim listen for it)",
     },
     { expect = [[vim.fn.mode() == "i" and _G.in_field("keywords")]], note = "back in the prompt, nothing blocked" },
   },
