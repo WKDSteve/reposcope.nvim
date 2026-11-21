@@ -17,6 +17,7 @@ local safe_execute_shell_async = require("reposcope.utils.protection").safe_exec
 ---@param uuid string
 ---@param repo_name string
 ---@param repo_url? string The repository's clone/web URL, for metrics logging
+---@param repo_path? string Target directory of the clone; with it a successful git/gh clone fires `User ReposcopeCloned`
 ---@return nil
 --- Asynchronous: `git clone` is a network operation that runs for seconds and,
 --- on a large repository or a slow link, minutes. It used to go through the
@@ -26,7 +27,7 @@ local safe_execute_shell_async = require("reposcope.utils.protection").safe_exec
 ---
 --- The duration measurement still spans the real wall-clock time of the clone;
 --- `start` is captured before the spawn and read in the callback.
-function M.execute(cmd, uuid, repo_name, repo_url)
+function M.execute(cmd, uuid, repo_name, repo_url, repo_path)
   local start = hrtime()
 
   notify("[reposcope] Cloning " .. repo_name .. "...", 2)
@@ -39,6 +40,15 @@ function M.execute(cmd, uuid, repo_name, repo_url)
         metrics.increase_success(uuid, repo_name, "clone", "clone_repo", duration, 200, repo_url)
       end
       notify("[reposcope] Repository cloned successfully", 2)
+      -- Soft integration point: gitsuite / terminal.nvim listen for this and pick the repo up.
+      -- curl/wget only download an archive, so no repository exists there yet: no event.
+      if repo_path and (cmd[1] == "git" or cmd[1] == "gh") then
+        vim.api.nvim_exec_autocmds("User", {
+          pattern = "ReposcopeCloned",
+          modeline = false,
+          data = { path = repo_path, url = repo_url },
+        })
+      end
     else
       if metrics.record_metrics() then
         metrics.increase_failed(uuid, repo_name, "clone", "clone_repo", duration, 500, output, repo_url)

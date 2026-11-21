@@ -64,7 +64,7 @@ function S.new(name)
     if not isdirectory(output_dir) then safe_mkdir(output_dir) end
 
     local cmd = build_command(clone_type, repo_url, output_dir)
-    execute_clone(cmd, uuid, repo_name, repo_url)
+    execute_clone(cmd, uuid, repo_name, repo_url, output_dir)
 
     request_state.end_request(uuid)
   end

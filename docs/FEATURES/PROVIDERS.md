@@ -76,3 +76,8 @@ latter two pulling a `.zip` archive instead) when set explicitly.
   `request_tool`
 - **Keymaps:** `<C-c>` in the prompt (see
   [BINDINGS.md](../BINDINGS.md#1-keymaps))
+- **Event:** after a successful `git`/`gh` clone `controllers/clone_executor.lua`
+  fires `User ReposcopeCloned` with `data = { path, url }` (`path` = the new
+  repository directory, `url` = its clone URL). Not fired on failure, nor for
+  `curl`/`wget` (they only download an archive). gitsuite.nvim and terminal.nvim
+  listen softly, so a clone shows up in their open panels without a restart.
