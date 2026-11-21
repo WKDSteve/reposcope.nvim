@@ -378,19 +378,27 @@ return function(H)
         pattern = "ReposcopeCloned",
         callback = function(a) seen[#seen + 1] = a.data end,
       })
-      with_executor(true, "", function(executor)
-        executor.execute({ "git", "clone", "https://x/y.git", "/tmp/y" }, "uuid", "y", "https://x/y.git", "/tmp/y")
-      end)
+      with_executor(
+        true,
+        "",
+        function(executor)
+          executor.execute({ "git", "clone", "https://x/y.git", "/tmp/y" }, "uuid", "y", "https://x/y.git", "/tmp/y")
+        end
+      )
       H.eq(#seen, 1, "a successful clone fires User ReposcopeCloned once")
       H.eq(seen[1] and seen[1].path, "/tmp/y", "with the repository path")
       H.eq(seen[1] and seen[1].url, "https://x/y.git", "and the URL")
-      with_executor(false, "fatal", function(executor)
-        executor.execute({ "git", "clone", "u", "/tmp/m" }, "uuid", "m", "u", "/tmp/m")
-      end)
+      with_executor(
+        false,
+        "fatal",
+        function(executor) executor.execute({ "git", "clone", "u", "/tmp/m" }, "uuid", "m", "u", "/tmp/m") end
+      )
       H.eq(#seen, 1, "a failed clone fires nothing")
-      with_executor(true, "", function(executor)
-        executor.execute({ "curl", "-o", "/tmp/z.zip", "u" }, "uuid", "z", "u", "/tmp/z")
-      end)
+      with_executor(
+        true,
+        "",
+        function(executor) executor.execute({ "curl", "-o", "/tmp/z.zip", "u" }, "uuid", "z", "u", "/tmp/z") end
+      )
       H.eq(#seen, 1, "an archive download is no repository: no event")
       vim.api.nvim_del_autocmd(id)
     end
