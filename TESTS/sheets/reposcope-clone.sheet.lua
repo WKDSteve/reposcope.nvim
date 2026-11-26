@@ -37,7 +37,11 @@ return {
       expect = [[_G.called(_G.fake, "git", "clone https://github.com/bob/lantern " .. _G.clone_dir .. "/lantern") == 1]],
       note = "git clone <url> <std_dir>/<name>",
     },
-    { wait = [[#_G.cloned_events == 1]], timeout = 10000, note = "the clone finished: User ReposcopeCloned fired once" },
+    {
+      wait = [[#_G.cloned_events == 1]],
+      timeout = 10000,
+      note = "the clone finished: User ReposcopeCloned fired once",
+    },
     {
       expect = [[_G.cloned_events[1].path == _G.clone_dir .. "/lantern" and _G.cloned_events[1].url == "https://github.com/bob/lantern"]],
       note = "with the new repository's path and its URL (gitsuite and terminal.nvim listen for it)",
