@@ -165,7 +165,9 @@ return function(H)
   local dir, cleanup = H.fixture("clone")
   local ok_all, err_all = pcall(function()
     for _, m in ipairs(MANAGERS) do
-      local function with_manager(fn)
+      -- `isdir`, when given, stands in for vim.fn.isdirectory while the manager
+      -- is loaded and run (it captures the function at require time).
+      local function with_manager(fn, isdir)
         local env = {
           executed = {},
           mkdirs = {},
@@ -194,6 +196,8 @@ return function(H)
             options = { dev_mode = false },
           },
         }, { m.module }, function()
+          local real_isdirectory = vim.fn.isdirectory
+          if isdir then vim.fn.isdirectory = isdir end
           local config = require("reposcope.config")
           local saved = config.options.clone.type
           config.options.clone.type = m.tool
@@ -204,6 +208,7 @@ return function(H)
           local ok, err = pcall(fn, require(m.module), env, request_state)
 
           config.options.clone.type = saved
+          vim.fn.isdirectory = real_isdirectory
           request_state.clear_all_requests()
           if not ok then error(err, 0) end
         end)
@@ -251,6 +256,7 @@ return function(H)
       -- only `/` is stripped. Documented rather than pinned as a defect --
       -- the Win32 API accepts the mixed separator, so the clone still lands
       -- in the right place; the argv just looks like `E:\repos\/telescope.nvim`.
+      -- The directory is declared to exist so the case runs on every OS.
       with_manager(function(manager, env, request_state)
         request_state.register_request("w")
         manager.clone("E:\\repos\\", "w")
@@ -259,7 +265,7 @@ return function(H)
           "E:\\repos\\/telescope.nvim" .. m.suffix,
           m.name .. ": a trailing backslash is not collapsed"
         )
-      end)
+      end, function() return 1 end)
 
       -- Nothing to clone ---------------------------------------------------
       with_manager(function(manager, env, request_state)
@@ -270,38 +276,26 @@ return function(H)
         H.falsy(request_state.is_registered("n"), "and the request is closed rather than left active")
       end)
 
-      -- BUG: the path guard and the mkdir are both dead code ---------------
+      -- A mistyped directory is rejected ----------------------------------
+      -- `vim.fn.isdirectory()` answers with 0 or 1, and `0` is truthy in Lua:
+      -- the guard compares with 1, or a missing directory went straight to
+      -- `git clone` and the "Invalid path" branch was unreachable.
       with_manager(function(manager, env, request_state)
         request_state.register_request("bad")
-        local missing = dir .. "/definitely-not-there"
+        manager.clone(dir .. "/definitely-not-there", "bad")
 
-        manager.clone(missing, "bad")
-
-        -- `vim.fn.isdirectory()` answers with 0 or 1, and `0` is *truthy* in
-        -- Lua, so `not isdirectory(path)` is `false` for every input. The
-        -- "Clone request: Invalid path" branch can therefore never be taken:
-        -- a mistyped directory is passed straight to `git clone`, which then
-        -- fails with git's own message instead of the plugin's.
-        H.eq(#env.executed, 1, "BUG: a non-existent target directory is not rejected")
-        for _, note in ipairs(env.notes) do
-          H.excludes(note, "Invalid path", "BUG: and the guard's message is unreachable")
-        end
-
-        -- The same mistake one line further down: `if not isdirectory(output_dir)
-        -- then safe_mkdir(output_dir) end` never calls safe_mkdir either. It
-        -- happens to be survivable for `git clone` (which creates its own
-        -- target) and for the archive downloads (whose `-o` target is a file
-        -- next to the directory), which is why it has gone unnoticed.
-        H.eq(#env.mkdirs, 0, "BUG: safe_mkdir is never reached, whatever the target looks like")
+        H.eq(#env.executed, 0, m.name .. ": a non-existent target directory starts no process")
+        H.contains(table.concat(env.notes, "\n"), "Invalid path", "and says why")
+        H.falsy(request_state.is_request_active("bad"), "without leaving the request active")
       end)
 
-      -- ... and the symmetric half: even for a directory that *does* exist,
-      -- the mkdir is skipped -- so the branch is not merely inverted, it is
-      -- unreachable in both directions.
+      -- The target directory is left to the tool: git/gh create it (and refuse
+      -- a non-empty one), curl/wget write <target>.zip next to it.
       with_manager(function(manager, env, request_state)
         request_state.register_request("ok")
         manager.clone(dir, "ok")
-        H.eq(#env.mkdirs, 0, "BUG: unreachable for an existing directory too")
+        H.eq(#env.executed, 1, m.name .. ": an existing directory is cloned into")
+        H.eq(#env.mkdirs, 0, "and no target directory is created up front")
       end)
     end
   end)

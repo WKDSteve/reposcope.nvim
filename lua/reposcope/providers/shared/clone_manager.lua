@@ -22,7 +22,6 @@ function S.new(name)
   local execute_clone = require("reposcope.controllers.clone_executor").execute
   -- Utils
   local notify = require("reposcope.utils.debug").notify
-  local safe_mkdir = require("reposcope.utils.protection").safe_mkdir
   local isdirectory = vim.fn.isdirectory
 
   ---Starts a clone operation using the given path and UUID
@@ -40,7 +39,7 @@ function S.new(name)
       return
     end
 
-    if not path or not isdirectory(path) then
+    if not path or isdirectory(path) ~= 1 then
       notify("[reposcope] Clone request: Invalid path", 4)
       return
     end
@@ -57,11 +56,10 @@ function S.new(name)
     local repo_url = infos.url
     local clone_type = config.options.clone.type
 
-    -- Normalize the path and create target directory
+    -- Normalize the path. The target directory itself is not created here: git/gh
+    -- create it (and refuse a non-empty one), curl/wget write <target>.zip beside it.
     path = path:gsub("/+$", "") .. "/"
     local output_dir = path .. repo_name
-
-    if not isdirectory(output_dir) then safe_mkdir(output_dir) end
 
     local cmd = build_command(clone_type, repo_url, output_dir)
     execute_clone(cmd, uuid, repo_name, repo_url, output_dir)
