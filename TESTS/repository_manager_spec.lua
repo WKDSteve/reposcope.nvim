@@ -22,7 +22,9 @@ return function(H)
     local stubs = {
       ["reposcope.providers." .. provider .. ".repositories.repository_fetcher"] = {
         fetch_repositories = function(query, on_success, on_failure)
-          env.fetches[#env.fetches + 1] = { query = query }
+          -- A snapshot of the request table while the search runs.
+          local active = vim.deepcopy(require("reposcope.state.requests_state").requests)
+          env.fetches[#env.fetches + 1] = { query = query, active = active }
           if env.outcome == "success" then
             on_success()
           elseif env.outcome == "failure" then
@@ -93,16 +95,14 @@ return function(H)
 
         H.eq(#env.fetches, 1, ("%s.%s: one search"):format(m.name, entry))
         H.eq(env.fetches[1].query, "nvim plugin", "with the caller's query, unmodified")
-        H.ok(request_state.is_request_active("b"), "the UUID is marked active before the search runs")
+        H.eq(env.fetches[1].active.b, true, "the UUID is marked active while the search runs")
         H.ok(succeeded, "the success callback fires")
         H.eq(#env.cleared, 0, "and nothing is cleared")
 
-        -- Documented, not a defect: neither entry point ever calls
-        -- `end_request`. The UUID stays in `requests_state` for the rest of
-        -- the session -- harmless, because `provider_controller` generates a
-        -- fresh one per search, but it does mean the table only grows. The
-        -- README managers next door *do* close their requests.
-        H.ok(request_state.is_registered("b"), "the request is deliberately never closed by this manager")
+        -- The request ends with the answer: anyone asking requests_state
+        -- whether a search is running must not get "yes" forever, and the
+        -- table must not grow by one entry per search.
+        H.falsy(request_state.is_registered("b"), "the request is closed once the answer is in")
       end)
 
       -----------------------------------------------------------------------
@@ -116,6 +116,7 @@ return function(H)
         manager[entry]("nvim", "c", nil, function() failed = true end)
         H.ok(failed, ("%s.%s: a caller-supplied failure handler is used"):format(m.name, entry))
         H.eq(#env.cleared, 0, "and the default teardown is not run on top of it")
+        H.falsy(request_state.is_registered("c"), "and a failed search closes its request too")
       end)
 
       with_manager(m.name, m.module, function(manager, env, request_state)

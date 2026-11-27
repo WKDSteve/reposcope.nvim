@@ -52,8 +52,10 @@ function S.new(name)
     request_state.start_request(uuid)
 
     fetcher.fetch_repositories(query, function()
+      request_state.end_request(uuid)
       if on_success then on_success() end
     end, function()
+      request_state.end_request(uuid)
       if on_failure then
         on_failure()
       else
@@ -79,9 +81,11 @@ function S.new(name)
     request_state.start_request(uuid)
 
     fetcher.fetch_repositories(query, function()
+      request_state.end_request(uuid)
       ui_loader.load_ui_after_fetch()
       if on_success then on_success() end
     end, function()
+      request_state.end_request(uuid)
       if on_failure then
         on_failure()
       else
