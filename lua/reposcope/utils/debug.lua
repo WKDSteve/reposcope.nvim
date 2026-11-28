@@ -11,10 +11,10 @@ local M = {}
 
 -- Messages are shown as a corner popup with a yankable history (lib.nvim.notify.popup)
 -- instead of through vim.notify, so they never surface as a :messages / more-prompt.
----@type fun(msg: string, level?: integer)
-local function notify(msg, level)
+---@type fun(msg: string, level?: integer, no_echo?: boolean)
+local function notify(msg, level, no_echo)
   local ok, config = pcall(require, "reposcope.config")
-  local messages = ok and config.options and config.options.notify_messages
+  local messages = not no_echo and ok and config.options and config.options.notify_messages
   local delivered = pcall(
     function() require("lib.nvim.notify.popup").deliver(msg, level, { source = "reposcope", messages = messages }) end
   )
@@ -61,6 +61,16 @@ function M.set_dev_mode(value) M.options.dev_mode = value end
 ---@return nil
 function M.info(message)
   vim.schedule(function() notify(message, vim.log.levels.INFO) end)
+end
+
+---Like `M.info`, but only the toast (and its history): never written to
+--- `:messages`, which echoes. For a notice right after a prompt (a clone's
+--- start and end, after the path prompt): an echo stacked under the answered
+--- prompt line stops the editor at a hit-enter prompt.
+---@param message string
+---@return nil
+function M.toast(message)
+  vim.schedule(function() notify(message, vim.log.levels.INFO, true) end)
 end
 
 ---@param message string The notification message

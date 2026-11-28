@@ -307,7 +307,10 @@ return function(H)
   ---------------------------------------------------------------------------
   do
     local function with_executor(success, output, fn)
-      local env = { spawned = {}, metrics = {}, notes = {} }
+      -- `notes` are dev-mode-gated notify() calls (only level >= WARN reach the
+      -- user outside dev mode); `toasts` are info() and toast() calls, shown
+      -- always, each tagged with which of the two it was (toast() never echoes).
+      local env = { spawned = {}, metrics = {}, notes = {}, toasts = {} }
       H.with_stubs(
         {
           ["reposcope.utils.protection"] = {
@@ -330,6 +333,8 @@ return function(H)
           },
           ["reposcope.utils.debug"] = {
             notify = function(msg) env.notes[#env.notes + 1] = msg end,
+            info = function(msg) env.toasts[#env.toasts + 1] = "info: " .. msg end,
+            toast = function(msg) env.toasts[#env.toasts + 1] = "toast: " .. msg end,
             is_dev_mode = function() return false end,
             debugf = function() end,
             options = { dev_mode = false },
@@ -341,14 +346,27 @@ return function(H)
     end
 
     with_executor(true, "", function(executor, env)
-      executor.execute({ "git", "clone", "https://x/y.git", "/tmp/y" }, "uuid", "y", "https://x/y.git")
+      executor.execute({ "git", "clone", "https://x/y.git", "/tmp/y" }, "uuid", "y", "https://x/y.git", "/tmp/y")
       H.eq(env.spawned[1][1], "git", "the argv reaches the async runner unchanged")
       H.eq(#env.spawned[1], 4, "with all four elements")
       H.eq(env.metrics[1].kind, "success", "a successful clone is recorded as one")
       H.eq(env.metrics[1].source, "clone", "tagged as a clone")
       H.eq(env.metrics[1].context, "clone_repo", "in the clone context")
       H.eq(env.metrics[1].status, 200, "with a synthetic 200 -- there is no HTTP status here")
-      H.contains(table.concat(env.notes, "\n"), "cloned successfully", "and the user is told")
+      -- Outside dev mode too: a clone runs in the background for seconds to
+      -- minutes, and these two toasts are all that shows it started and ended.
+      H.contains(env.toasts[1], "Cloning y into /tmp/y", "the start is said outside dev mode, with the target")
+      H.contains(env.toasts[2], "cloned successfully: /tmp/y", "and so is the success")
+      -- Neither echoes: the clone starts right after the path prompt, and an echo
+      -- stacked under the answered prompt line stops the editor at a hit-enter
+      -- prompt (reposcope's notify_messages defaults to true).
+      H.contains(env.toasts[1], "toast: ", "the start is a toast only, kept out of :messages")
+      H.contains(env.toasts[2], "toast: ", "and so is the success")
+    end)
+
+    with_executor(true, "", function(executor, env)
+      executor.execute({ "curl", "-o", "/tmp/z.zip", "u" }, "uuid", "z", "u", "/tmp/z")
+      H.contains(env.toasts[2], "cloned successfully: /tmp/z.zip", "an archive download names the archive")
     end)
 
     with_executor(false, "fatal: repository not found", function(executor, env)

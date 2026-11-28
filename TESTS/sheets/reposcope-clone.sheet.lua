@@ -46,6 +46,11 @@ return {
       expect = [[_G.cloned_events[1].path == _G.clone_dir .. "/lantern" and _G.cloned_events[1].url == "https://github.com/bob/lantern"]],
       note = "with the new repository's path and its URL (gitsuite and terminal.nvim listen for it)",
     },
+    {
+      wait = [[_G.noted("Cloning lantern into " .. _G.clone_dir .. "/lantern...")
+        and _G.noted("Repository cloned successfully: " .. _G.clone_dir .. "/lantern")]],
+      note = "start and success are toasts outside dev mode too, with the target",
+    },
     { expect = [[vim.fn.mode() == "i" and _G.in_field("keywords")]], note = "back in the prompt, nothing blocked" },
   },
   manual = {

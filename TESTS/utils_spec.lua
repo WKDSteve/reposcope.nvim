@@ -238,7 +238,9 @@ return function(H)
     -- Messages are delivered through `lib.nvim.notify.popup`, not vim.notify.
     local popup = require("lib.nvim.notify.popup")
     local popup_deliver = popup.deliver
-    popup.deliver = function(msg, level) seen[#seen + 1] = { msg = msg, level = level } end
+    popup.deliver = function(msg, level, opts)
+      seen[#seen + 1] = { msg = msg, level = level, messages = opts and opts.messages }
+    end
 
     local ok, err = pcall(function()
       H.with_stubs({}, { "reposcope.utils.debug" }, function()
@@ -285,6 +287,23 @@ return function(H)
         H.eq(#seen, 1, "and speaks inside it")
         H.contains(seen[1].msg, "context please", "carrying the message")
         H.contains(seen[1].msg, "called in function", "plus the calling location")
+
+        -- info and toast speak whatever the dev mode; only info also goes to
+        -- :messages (an echo), so a toast can directly follow another notice
+        -- without stopping the editor at a hit-enter prompt.
+        seen = {}
+        dbg.set_dev_mode(false)
+        local config = require("reposcope.config")
+        local saved_messages = config.options.notify_messages
+        config.options.notify_messages = true
+        dbg.info("an answer")
+        dbg.toast("a start")
+        vim.wait(20)
+        config.options.notify_messages = saved_messages
+        H.eq(#seen, 2, "info and toast are shown outside dev mode")
+        H.eq(seen[1].messages, true, "info follows notify_messages into :messages")
+        H.eq(seen[2].msg, "a start", "the toast carries its message")
+        H.falsy(seen[2].messages, "and never goes to :messages, whatever notify_messages says")
 
         H.eq(dbg.no_such_key, nil, "the metatable answers only for dev_mode")
       end)
