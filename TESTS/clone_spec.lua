@@ -320,6 +320,33 @@ return function(H)
         H.falsy(request_state.is_registered("bad"), "and the request is closed rather than left registered")
       end)
 
+      -- `~` and `$VAR` typed at the prompt -----------------------------------
+      -- isdirectory() expands neither: without the expansion `~/<dir>` was
+      -- refused as "Invalid path" (and before that went to git as a literal `~`).
+      with_manager(function(manager, env, request_state)
+        local home, base = vim.fs.dirname(dir), vim.fs.basename(dir)
+        -- os_homedir() reads HOME, and USERPROFILE on Windows.
+        local saved_home, saved_profile = vim.env.HOME, vim.env.USERPROFILE
+        local saved_var = vim.env.REPOSCOPE_CLONE_SPEC_DIR
+        vim.env.HOME = home
+        vim.env.USERPROFILE = home
+        vim.env.REPOSCOPE_CLONE_SPEC_DIR = dir
+        local ok, err = pcall(function()
+          request_state.register_request("tilde")
+          manager.clone("~/" .. base, "tilde")
+          request_state.register_request("var")
+          manager.clone("$REPOSCOPE_CLONE_SPEC_DIR", "var")
+        end)
+        vim.env.HOME = saved_home
+        vim.env.USERPROFILE = saved_profile
+        vim.env.REPOSCOPE_CLONE_SPEC_DIR = saved_var
+        if not ok then error(err, 0) end
+
+        H.eq(#env.executed, 2, m.name .. ": a `~` or `$VAR` path is expanded, not refused")
+        H.has(env.executed[1].cmd, home .. "/" .. base .. "/telescope.nvim" .. m.suffix, "`~` is the home directory")
+        H.has(env.executed[2].cmd, dir .. "/telescope.nvim" .. m.suffix, "and `$VAR` the variable's value")
+      end)
+
       -- The target directory is left to the tool: git/gh create it (and refuse
       -- a non-empty one), curl/wget write <target>.zip next to it.
       with_manager(function(manager, env, request_state)

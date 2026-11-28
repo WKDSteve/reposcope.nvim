@@ -24,6 +24,7 @@ local execute_clone = require("reposcope.controllers.clone_executor").execute
 -- Utils
 local notify = require("reposcope.utils.debug").notify
 local isdirectory = vim.fn.isdirectory
+local expand_path = require("lib.nvim.cross.fs.expand_path")
 
 ---Starts a clone operation using the given path and UUID
 ---@param path string The target directory for cloning
@@ -39,6 +40,11 @@ function M.clone(path, uuid)
     notify("[reposcope] Clone request: Already active for UUID", 2)
     return
   end
+
+  -- What the prompt returns is typed text: `~` and `$VAR` mean what they mean in a shell
+  -- (std_dir gets the same expansion in config). isdirectory() expands neither, and git
+  -- would take `~` as a literal directory name.
+  if type(path) == "string" then path = expand_path(path) end
 
   if not path or isdirectory(path) ~= 1 then
     notify("[reposcope] Clone request: Invalid path", 4)
