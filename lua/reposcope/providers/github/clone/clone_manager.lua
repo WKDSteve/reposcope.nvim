@@ -42,6 +42,7 @@ function M.clone(path, uuid)
 
   if not path or isdirectory(path) ~= 1 then
     notify("[reposcope] Clone request: Invalid path", 4)
+    request_state.end_request(uuid)
     return
   end
 

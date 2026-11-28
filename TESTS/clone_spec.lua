@@ -37,12 +37,15 @@ return function(H)
     local curl = github.build_command("curl", url, out)
     H.eq(curl[1], "curl", "curl downloads an archive instead of cloning")
     H.eq(curl[2], "-L", "following redirects")
-    H.eq(curl[3], "--max-time", "with a timeout")
-    H.eq(curl[4], "300", "of 300s -- generous, because this is a whole repository")
-    H.eq(curl[5], "-o", "written to a file")
-    H.eq(curl[6], out .. ".zip", "named after the target directory")
+    -- Without --fail a 404 (no `main` branch) ends with exit 0, its error page is saved as
+    -- <target>.zip, and the user is told the repository was cloned.
+    H.eq(curl[3], "--fail", "failing on an HTTP error instead of saving the error page")
+    H.eq(curl[4], "--max-time", "with a timeout")
+    H.eq(curl[5], "300", "of 300s -- generous, because this is a whole repository")
+    H.eq(curl[6], "-o", "written to a file")
+    H.eq(curl[7], out .. ".zip", "named after the target directory")
     H.eq(
-      curl[7],
+      curl[8],
       "https://github.com/nvim-telescope/telescope.nvim/archive/refs/heads/main.zip",
       "from GitHub's own archive route"
     )
@@ -52,7 +55,7 @@ return function(H)
     H.eq(wget[2], "--timeout=300", "with its own timeout spelling")
     H.eq(wget[3], "-O", "writing to")
     H.eq(wget[4], out .. ".zip", "the same archive name")
-    H.eq(wget[5], curl[7], "and the same URL")
+    H.eq(wget[5], curl[8], "and the same URL")
   end
 
   do
@@ -70,6 +73,7 @@ return function(H)
       "https://gitlab.com/gitlab-org/gitlab-runner/-/archive/main/gitlab-runner-main.zip",
       "GitLab's archive route is /-/archive/<branch>/<repo>-<branch>.zip, not GitHub's"
     )
+    H.eq(curl[3], "--fail", "GitLab's curl fails on an HTTP error too")
 
     -- A nested group is part of the path, so the greedy owner match has to
     -- keep all of it.
@@ -95,6 +99,7 @@ return function(H)
       "https://codeberg.org/forgejo/forgejo/archive/main.zip",
       "Gitea's archive route is /<owner>/<repo>/archive/<branch>.zip"
     )
+    H.eq(curl[3], "--fail", "Codeberg's curl fails on an HTTP error too")
     H.eq(
       codeberg.build_command("wget", url, out)[#codeberg.build_command("wget", url, out)],
       curl[#curl],
@@ -286,7 +291,7 @@ return function(H)
 
         H.eq(#env.executed, 0, m.name .. ": a non-existent target directory starts no process")
         H.contains(table.concat(env.notes, "\n"), "Invalid path", "and says why")
-        H.falsy(request_state.is_request_active("bad"), "without leaving the request active")
+        H.falsy(request_state.is_registered("bad"), "and the request is closed rather than left registered")
       end)
 
       -- The target directory is left to the tool: git/gh create it (and refuse

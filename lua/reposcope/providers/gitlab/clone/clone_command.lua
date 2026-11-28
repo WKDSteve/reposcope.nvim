@@ -39,7 +39,7 @@ function M.build_command(clone_type, repo_url, output_dir)
       .. ".zip"
 
     if clone_type == "curl" then
-      return { "curl", "-L", "--max-time", tostring(ARCHIVE_TIMEOUT_S), "-o", output_dir .. ".zip", zip_url }
+      return { "curl", "-L", "--fail", "--max-time", tostring(ARCHIVE_TIMEOUT_S), "-o", output_dir .. ".zip", zip_url }
     else
       return { "wget", "--timeout=" .. ARCHIVE_TIMEOUT_S, "-O", output_dir .. ".zip", zip_url }
     end
