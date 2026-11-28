@@ -37,7 +37,7 @@ return function(H)
     local curl = github.build_command("curl", url, out)
     H.eq(curl[1], "curl", "curl downloads an archive instead of cloning")
     H.eq(curl[2], "-L", "following redirects")
-    -- Without --fail a 404 (no `main` branch) ends with exit 0, its error page is saved as
+    -- Without --fail a 404 (a branch that does not exist) ends with exit 0, its error page is saved as
     -- <target>.zip, and the user is told the repository was cloned.
     H.eq(curl[3], "--fail", "failing on an HTTP error instead of saving the error page")
     H.eq(curl[4], "--max-time", "with a timeout")
@@ -46,8 +46,15 @@ return function(H)
     H.eq(curl[7], out .. ".zip", "named after the target directory")
     H.eq(
       curl[8],
-      "https://github.com/nvim-telescope/telescope.nvim/archive/refs/heads/main.zip",
-      "from GitHub's own archive route"
+      "https://github.com/nvim-telescope/telescope.nvim/archive/HEAD.zip",
+      "from GitHub's own archive route, on the default branch when none is known"
+    )
+
+    -- The search API's html_url has no `.git`, and the default branch is not always `main`.
+    H.eq(
+      github.build_command("curl", "https://github.com/curl/curl", out, "master")[8],
+      "https://github.com/curl/curl/archive/refs/heads/master.zip",
+      "a bare html_url gets the archive route of the repository's own default branch"
     )
 
     local wget = github.build_command("wget", url, out)
@@ -70,8 +77,13 @@ return function(H)
     local curl = gitlab.build_command("curl", url, out)
     H.eq(
       curl[#curl],
-      "https://gitlab.com/gitlab-org/gitlab-runner/-/archive/main/gitlab-runner-main.zip",
-      "GitLab's archive route is /-/archive/<branch>/<repo>-<branch>.zip, not GitHub's"
+      "https://gitlab.com/gitlab-org/gitlab-runner/-/archive/HEAD/gitlab-runner-HEAD.zip",
+      "GitLab's archive route is /-/archive/<branch>/<repo>-<branch>.zip, HEAD when no branch is known"
+    )
+    H.eq(
+      gitlab.build_command("curl", url, out, "master")[#curl],
+      "https://gitlab.com/gitlab-org/gitlab-runner/-/archive/master/gitlab-runner-master.zip",
+      "the repository's default branch, when known"
     )
     H.eq(curl[3], "--fail", "GitLab's curl fails on an HTTP error too")
 
@@ -82,7 +94,7 @@ return function(H)
 
     -- A URL that does not look like gitlab.com still yields a usable name.
     local odd = gitlab.build_command("wget", "https://self.hosted/team/thing.git", out)
-    H.contains(odd[#odd], "/thing/-/archive/main/thing-main.zip", "an unrecognised host still derives the project name")
+    H.contains(odd[#odd], "/thing/-/archive/HEAD/thing-HEAD.zip", "an unrecognised host still derives the project name")
   end
 
   do
@@ -96,8 +108,13 @@ return function(H)
     local curl = codeberg.build_command("curl", url, out)
     H.eq(
       curl[#curl],
-      "https://codeberg.org/forgejo/forgejo/archive/main.zip",
-      "Gitea's archive route is /<owner>/<repo>/archive/<branch>.zip"
+      "https://codeberg.org/forgejo/forgejo/archive/HEAD.zip",
+      "Gitea's archive route is /<owner>/<repo>/archive/<branch>.zip, HEAD when no branch is known"
+    )
+    H.eq(
+      codeberg.build_command("curl", url, out, "forgejo")[#curl],
+      "https://codeberg.org/forgejo/forgejo/archive/forgejo.zip",
+      "the repository's default branch, when known"
     )
     H.eq(curl[3], "--fail", "Codeberg's curl fails on an HTTP error too")
     H.eq(
@@ -135,7 +152,12 @@ return function(H)
     with_info({ name = "telescope.nvim", html_url = "https://github.com/t/telescope.nvim.git" }, function(info)
       H.eq(info.name, "telescope.nvim", "a complete selection yields the name")
       H.eq(info.url, "https://github.com/t/telescope.nvim.git", "and the URL")
+      H.eq(info.branch, nil, "and no branch when the provider reported none")
     end)
+    with_info(
+      { name = "curl", html_url = "https://github.com/curl/curl", default_branch = "master" },
+      function(info) H.eq(info.branch, "master", "the default branch the search reported is carried along") end
+    )
   end
 
   ---------------------------------------------------------------------------
@@ -177,7 +199,7 @@ return function(H)
           executed = {},
           mkdirs = {},
           notes = {},
-          info = { name = "telescope.nvim", url = "https://github.com/t/telescope.nvim.git" },
+          info = { name = "telescope.nvim", url = "https://github.com/t/telescope.nvim.git", branch = "master" },
         }
         H.with_stubs({
           ["reposcope.controllers.clone_info"] = {
@@ -241,6 +263,10 @@ return function(H)
         H.eq(env.executed[1].cmd[1], m.head, "with the configured tool at the head of argv")
         H.eq(env.executed[1].repo_name, "telescope.nvim", "the repository name is passed for metrics")
         H.eq(env.executed[1].repo_url, "https://github.com/t/telescope.nvim.git", "as is the URL")
+        if m.suffix == ".zip" then
+          local cmd = env.executed[1].cmd
+          H.contains(cmd[#cmd], "/master/", m.name .. ": the archive is the selected repository's default branch")
+        end
         H.eq(env.executed[1].uuid, "y", "and the request UUID")
         H.has(env.executed[1].cmd, dir .. "/telescope.nvim" .. m.suffix, "the target is <dir>/<repo name>")
         H.falsy(request_state.is_registered("y"), "the request is closed once the clone has been handed off")

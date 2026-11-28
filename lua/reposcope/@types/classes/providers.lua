@@ -18,12 +18,13 @@
 ---@class CloneInfo
 ---@field name string The name of the repository
 ---@field url string The repository's clone/web URL
+---@field branch? string The repository's default branch, when the provider reported one
 
 ---@class CloneManagerModule
 ---@field clone fun(path: string, uuid: string): nil Starts a clone operation for the selected repository
 
 ---@class CloneCommandBuilderModule
----@field build_command fun(clone_type: string, repo_url: string, output_dir: string): string[]
+---@field build_command fun(clone_type: string, repo_url: string, output_dir: string, branch?: string): string[]
 
 ---@class QueryBuilderModule
 ---@field build fun(input: table<string, string>): string

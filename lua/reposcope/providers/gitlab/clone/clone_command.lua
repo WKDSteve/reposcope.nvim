@@ -19,12 +19,13 @@ local ARCHIVE_TIMEOUT_S = 300
 ---@param clone_type string
 ---@param repo_url string The repository's clone URL (e.g. `https://gitlab.com/owner/repo.git`)
 ---@param output_dir string
+---@param branch? string The repository's default branch; nil means GitLab's HEAD archive
 ---@return string[]
-function M.build_command(clone_type, repo_url, output_dir)
-  -- owner/repo/branch, derived from the .git clone URL
+function M.build_command(clone_type, repo_url, output_dir, branch)
+  -- owner/repo, derived from the .git clone URL
   local owner, repo = repo_url:match("gitlab%.com/(.+)/([^/]+)%.git$")
   repo = repo or repo_url:match("([^/]+)%.git$") or output_dir:match("([^/]+)$")
-  local branch = "main"
+  if not branch or branch == "" then branch = "HEAD" end
 
   if clone_type == "curl" or clone_type == "wget" then
     local zip_url = "https://gitlab.com/"

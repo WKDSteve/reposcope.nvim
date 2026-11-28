@@ -26,11 +26,16 @@ local ARCHIVE_TIMEOUT_S = 300
 ---@param clone_type string
 ---@param repo_url string
 ---@param output_dir string
+---@param branch? string The repository's default branch; nil means GitHub's own HEAD archive
 ---@return string[]
-function M.build_command(clone_type, repo_url, output_dir)
+function M.build_command(clone_type, repo_url, output_dir, branch)
   if clone_type == "gh" then return { "gh", "repo", "clone", repo_url, output_dir } end
 
-  local zip_url = repo_url:gsub("%.git$", "/archive/refs/heads/main.zip")
+  -- The search API's html_url has no `.git` suffix (a clone URL has one), so
+  -- the archive route is appended to the bare repository URL either way.
+  local base = repo_url:gsub("/+$", ""):gsub("%.git$", "")
+  local ref = (branch and branch ~= "" and branch ~= "HEAD") and ("refs/heads/" .. branch) or "HEAD"
+  local zip_url = base .. "/archive/" .. ref .. ".zip"
 
   if clone_type == "curl" then
     return { "curl", "-L", "--fail", "--max-time", tostring(ARCHIVE_TIMEOUT_S), "-o", output_dir .. ".zip", zip_url }

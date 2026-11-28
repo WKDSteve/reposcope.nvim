@@ -11,7 +11,7 @@ local M = {}
 
 local notify = require("reposcope.utils.debug").notify
 
----Gets the name and URL of the selected repository
+---Gets the name, URL and default branch of the selected repository
 ---@return CloneInfo|nil
 function M.get_clone_informations()
   local repo = require("reposcope.cache.repository_cache").get_selected()
@@ -33,7 +33,11 @@ function M.get_clone_informations()
     return nil
   end
 
-  return { name = name, url = url }
+  -- The default branch decides which archive curl/wget download; a provider
+  -- that did not report one leaves it nil, and the builder falls back to HEAD.
+  local branch = type(repo.default_branch) == "string" and repo.default_branch ~= "" and repo.default_branch or nil
+
+  return { name = name, url = url, branch = branch }
 end
 
 return M

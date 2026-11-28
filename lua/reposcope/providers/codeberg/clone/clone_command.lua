@@ -18,9 +18,10 @@ local ARCHIVE_TIMEOUT_S = 300
 ---@param clone_type string
 ---@param repo_url string The repository's clone URL (e.g. `https://codeberg.org/owner/repo.git`)
 ---@param output_dir string
+---@param branch? string The repository's default branch; nil means Codeberg's HEAD archive
 ---@return string[]
-function M.build_command(clone_type, repo_url, output_dir)
-  local branch = "main"
+function M.build_command(clone_type, repo_url, output_dir, branch)
+  if not branch or branch == "" then branch = "HEAD" end
 
   if clone_type == "curl" or clone_type == "wget" then
     local base = repo_url:gsub("%.git$", "")

@@ -63,7 +63,7 @@ function M.clone(path, uuid)
   path = path:gsub("/+$", "") .. "/"
   local output_dir = path .. repo_name
 
-  local cmd = build_command(clone_type, repo_url, output_dir)
+  local cmd = build_command(clone_type, repo_url, output_dir, infos.branch)
   execute_clone(cmd, uuid, repo_name, repo_url, output_dir)
 
   request_state.end_request(uuid)
